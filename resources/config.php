@@ -11,10 +11,10 @@
 $config = array(
     "db" => array(
         "db1" => array(
-            "dbname" => "database1",
-            "username" => "dbUser",
-            "password" => "pa$$",
-            "host" => "localhost"
+            "dbname" => "mash",
+            "username" => "mash",
+            "password" => "u3XxS7QQ8QhEhB2E5kGhPtqVgqFW",
+            "host" => "jonny.duckdns.org"
         )
     ),
     "urls" => array(
@@ -45,6 +45,8 @@ defined("LIBRARY_PATH")
 defined("TEMPLATES_PATH")
     or define("TEMPLATES_PATH", realpath(dirname(__FILE__) . '/templates'));
  
+defined("CLASSES_PATH")
+    or define("CLASSES_PATH", realpath(dirname(__FILE__) . '/classes'));
 /*
     Error reporting.
 */

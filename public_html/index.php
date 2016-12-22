@@ -3,23 +3,24 @@
     require_once("../resources/config.php");
      
     require_once(TEMPLATES_PATH . "/header.php");
-
-    require_once '../resources/library/meekrodb.2.3.class.php';
-    DB::$user = 'mash';
-    DB::$password = 'u3XxS7QQ8QhEhB2E5kGhPtqVgqFW';
-    DB::$dbName = 'mash';
-
+    require_once(CLASSES_PATH . "/calender.php");
+    require_once(LIBRARY_PATH . "/common.php");
+    require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
 ?>
 <div id="container">
     <div id="content">
         <!-- content -->
         <?php
-    	$results = DB::query("SELECT user_id, email FROM users");
-    	foreach ($results as $row) {
-		echo "ID: " . $row['user_id'] . "<br>";
-		echo "Email: " . $row['email'] . "<br>";
-		echo "<br>";
-	}
+
+        $event = new Event;
+        $event->query = "SELECT user_id, email FROM users";
+        $event->sqlQuery();
+        
+        foreach ($event->result as $row) {
+            echo "ID: " . $row['user_id'] . "<br>";
+            echo "Email: " . $row['email'] . "<br>";
+            echo "<br>";
+        }
         phpinfo();
         ?>
     </div>
