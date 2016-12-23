@@ -1,14 +1,14 @@
 <?php
 class Event {
     
-    public $query;
     public $result;
 
-    function _construct(){
+    function __construct(){
+        require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
     }
     
-    public function sqlQuery(){
+    public function sqlQuery($query){
         setupDatabase(1);
-    	$this->result = DB::query($this->query);
+    	$this->result = DB::query($query);
     }
 }
