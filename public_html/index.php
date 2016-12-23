@@ -11,9 +11,11 @@
         <!-- content -->
         <?php
 
-        $event = new Event;
+        $event = new AddEvent;
         $event->sqlQuery("SELECT user_id, email FROM users");
         
+        $event->addToCal();
+
         foreach ($event->result as $row) {
             echo "ID: " . $row['user_id'] . "<br>";
             echo "Email: " . $row['email'] . "<br>";

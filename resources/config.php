@@ -1,6 +1,19 @@
 <?php
  
 /*
+    Creating constants for heavily used paths makes things a lot easier.
+    ex. require_once(LIBRARY_PATH . "Paginator.php")
+*/
+defined("LIBRARY_PATH")
+    or define("LIBRARY_PATH", realpath(dirname(__FILE__) . '/library'));
+     
+defined("TEMPLATES_PATH")
+    or define("TEMPLATES_PATH", realpath(dirname(__FILE__) . '/templates'));
+ 
+defined("CLASSES_PATH")
+    or define("CLASSES_PATH", realpath(dirname(__FILE__) . '/classes'));
+    
+/*
     The important thing to realize is that the config file should be included in every
     page of your project, or at least any page you want access to these settings.
     This allows you to confidently use these settings throughout a project because
@@ -17,6 +30,7 @@ $config = array(
             "host" => "jonny.duckdns.org"
         )
     ),
+    "keyFile" => LIBRARY_PATH . '/../service-account-credentials.json',
     "urls" => array(
         "baseUrl" => "http://example.com"
     ),
@@ -29,24 +43,15 @@ $config = array(
     )
 );
  
-/*
-    I will usually place the following in a bootstrap file or some type of environment
-    setup file (code that is run at the start of every page request), but they work 
-    just as well in your config file if it's in php (some alternatives to php are xml or ini files).
-*/
  
+
+
 /*
-    Creating constants for heavily used paths makes things a lot easier.
-    ex. require_once(LIBRARY_PATH . "Paginator.php")
+    Enviroment variables
 */
-defined("LIBRARY_PATH")
-    or define("LIBRARY_PATH", realpath(dirname(__FILE__) . '/library'));
-     
-defined("TEMPLATES_PATH")
-    or define("TEMPLATES_PATH", realpath(dirname(__FILE__) . '/templates'));
- 
-defined("CLASSES_PATH")
-    or define("CLASSES_PATH", realpath(dirname(__FILE__) . '/classes'));
+date_default_timezone_set('Europe/London');
+$_ENV["REMOTE_USER"]="nwng84";
+
 /*
     Error reporting.
 */

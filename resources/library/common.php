@@ -8,3 +8,4 @@ function setupDatabase($database){
         DB::$host = $config["db"]["db1"]["host"];
     }
 }
+?>
