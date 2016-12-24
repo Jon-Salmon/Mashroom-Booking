@@ -16,7 +16,7 @@ class AddEvent {
         $this->start = new DateTime();      
         $this->end = new DateTime();
         $this->end->setDate(2016, 12, 24);      
-        $this->end->setTime(02, 55);
+        $this->end->setTime(21, 55);
         $this->google_ID = 9397593483;
         $this->details = "Test details for writing to database.";
     }
@@ -26,22 +26,22 @@ class AddEvent {
     	$this->result = DB::query($query);
     }
 
-    private function addToDB(){
+    private function addToDB($created){
         setupDatabase(1);
-        $result = DB::insert('Calendar', array(
+        $result = DB::insert('calendar', array(
             'start' => $this->start,
             'end' => $this->end,
             'google_id' => $this->google_ID,
             'owner' => $_ENV["REMOTE_USER"],
-            'details' => $this->details
+            'details' => $this->details,
+            'created' => $created
         ));
         
         if ($result == 1) {return TRUE;}
         else {return FALSE;}
     }
 
-    public function addToCal(){
-      
+    private function addToCal(){
         global $config;
         $client = new Google_Client();
         $client->setApplicationName("Mash Booking");
@@ -73,8 +73,21 @@ class AddEvent {
         ));
 
         $event = $service->events->insert($calendarId, $calEvent);
-        print_r($event);
+        $this->google_ID = $event->id;
+        return (new DateTime($event->created));
     }
-}
 
+    public function createEvent(){
+       if(!isset($this->start) || !isset($this->end) || !isset($this->details)) {
+           return FALSE;
+       }
+       else {
+           $created = $this->addToCal();
+           if (empty($this->google_ID)) {die();}
+           $this->addToDB($created);
+       }
+       return TRUE;
+    }
+
+}
 ?>

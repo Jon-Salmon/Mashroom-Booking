@@ -28,6 +28,12 @@ $config = array(
             "username" => "mash",
             "password" => "u3XxS7QQ8QhEhB2E5kGhPtqVgqFW",
             "host" => "jonny.duckdns.org"
+        ),
+        "users" => array(
+            "dbname" => "user_dets",
+            "username" => "mash",
+            "password" => "u3XxS7QQ8QhEhB2E5kGhPtqVgqFW",
+            "host" => "jonny.duckdns.org"
         )
     ),
     "keyFile" => LIBRARY_PATH . '/../service-account-credentials.json',
@@ -57,5 +63,4 @@ $_ENV["REMOTE_USER"]="nwng84";
 */
 ini_set("error_reporting", "true");
 error_reporting(E_ALL|E_STRCT);
- 
 ?>
