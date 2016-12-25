@@ -4,7 +4,7 @@
     require_once("../resources/config.php");
      
     require_once(TEMPLATES_PATH . "/header.php");
-    require_once(CLASSES_PATH . "/calender.php");
+    require_once(CLASSES_PATH . "/events.php");
     require_once(LIBRARY_PATH . "/common.php");
     require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
 ?>

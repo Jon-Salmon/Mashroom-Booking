@@ -55,8 +55,12 @@ $config = array(
 /*
     Enviroment variables
 */
-date_default_timezone_set('Europe/London');
 $_ENV["REMOTE_USER"]="nwng84";
+
+require_once(CLASSES_PATH . "/user.php");
+$USER = new User($_ENV["REMOTE_USER"]);
+
+date_default_timezone_set('Europe/London');
 
 /*
     Error reporting.
