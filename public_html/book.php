@@ -59,6 +59,16 @@
             $valid = FALSE;
         }
         
+        list($name, $nameErr) = $booking->checkBand(test_input($_POST["name"]));
+        if (!empty($nameErr)) {
+            $valid = FALSE;
+        }
+
+        list($details, $detailsErr) = $booking->checkDetails(test_input($_POST["details"]));
+        if (!empty($detailsErr)) {
+            $valid = FALSE;
+        }
+        
         }
 
         function test_input($data) {
@@ -92,7 +102,7 @@
         End time: <input type="text" class="timepicker" name="end" value="<?php echo $end;?>">
         <span class="error">* <?php echo $endErr;?></span>
         <br><br>
-        Other details: <input type="text" name="details" value="<?php echo $details;?>">
+        Other details: <textarea name="details" value="<?php echo $details;?>"></textarea>
         <span class="error"><?php echo $detailsErr;?></span>
         <br><br>
         <input type="submit" name="submit" value="Submit">  

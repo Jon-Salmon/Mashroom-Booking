@@ -12,13 +12,10 @@ class AddEvent {
     function __construct(){
         require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
         require_once(LIBRARY_PATH . "/google/vendor/autoload.php");
-
-        $this->details = "Test details for writing to database.";
-        $this->band = "Flat 7";
     }
     
 
-    private function validateDate($date)
+    private function _validateDate($date)
     {
         $d = DateTime::createFromFormat('d/m/Y', $date);
         return $d && $d->format('d/m/Y') === $date;
@@ -29,7 +26,7 @@ class AddEvent {
         if (empty($date)){
             $dateErr = "Date is required";
         }
-        elseif (!$this->validateDate($date)){
+        elseif (!$this->_validateDate($date)){
             $dateErr = "Date is invalid";
         }
         else {
@@ -38,7 +35,7 @@ class AddEvent {
         return(array($date, $dateErr));
     }
 
-    private function checkTime($time){
+    private function _checkTime($time){
         $timeErr = '';
         $cleanTime ='';
         if (empty($time)){
@@ -54,7 +51,7 @@ class AddEvent {
     }
 
     public function checkStart($start){
-        list($time, $startErr) = $this->checkTime($start);
+        list($time, $startErr) = $this->_checkTime($start);
         if ($time != FALSE){
 
             list($hour, $min) = explode(':', $time->format('H:i'));
@@ -67,7 +64,7 @@ class AddEvent {
     }
 
     public function checkEnd($end){
-        list($time, $endErr) = $this->checkTime($end);
+        list($time, $endErr) = $this->_checkTime($end);
         if ($time != FALSE){
 
             list($hour, $min) = explode(':', $time->format('H:i'));
@@ -79,7 +76,23 @@ class AddEvent {
         return(array($end, $endErr));
     }
 
-    private function addToDB($created){
+    public function checkBand($band){
+        if (strlen($band) > 255){
+            $bandErr = 'Too long';
+        }
+        else {
+            $this->band = $band;
+        }
+        return (array($band, $bandErr));
+    }
+
+    public function checkDetails($details){
+        $bandErr;
+        $this->details = $details;
+        return (array($band, $bandErr));
+    }
+
+    private function _addToDB($created){
         setupDatabase(1);
         $result = DB::insert('calendar', array(
             'start' => $this->start,
@@ -95,7 +108,7 @@ class AddEvent {
         else {return FALSE;}
     }
 
-    private function addToCal(){
+    private function _addToCal(){
         global $config, $USER;
         $client = new Google_Client();
         $client->setApplicationName("Mash Booking");
@@ -134,15 +147,13 @@ class AddEvent {
     }
 
     public function createEvent(){
-        var_dump($this->start);
-        var_dump($this->end);
        if(!isset($this->start) || !isset($this->end)) {
            return FALSE;
        }
        else {
-           $created = $this->addToCal();
+           $created = $this->_addToCal();
            if (empty($this->google_ID)) {return FALSE;}
-           $this->addToDB($created);
+           $this->_addToDB($created);
        }
        return TRUE;
     }
