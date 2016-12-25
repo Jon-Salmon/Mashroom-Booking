@@ -15,7 +15,7 @@
 <div id="header">
     <h1>Simple Site</h1>
     <ul class="nav global">
-        <li><a href="index.php">Home</a></li>
-        <li><a href="book.php">Book</a></li>
+        <li><a href=<?php echo HTTP_ROOT . "index.php"?>>Home</a></li>
+        <li><a href=<?php echo HTTP_ROOT . "book.php"?>>Book</a></li>
     </ul>
 </div>
