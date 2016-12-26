@@ -1,10 +1,12 @@
 <?php
-class AddEvent {
+class Event {
     private $start;
     private $end;
     private $google_ID;
     private $details;
     private $band;
+
+    public $addErr = '';
     
     private $date;
     
@@ -14,6 +16,7 @@ class AddEvent {
         require_once(LIBRARY_PATH . "/google/vendor/autoload.php");
     }
     
+    # Functions to validate and set inputs for event creatition
 
     private function _validateDate($date)
     {
@@ -72,11 +75,18 @@ class AddEvent {
                 $this->end = clone $this->date;
                 $this->end->setTime($hour, $min);
             }
+            if ($this->end < $this->start) {
+                $endErr = 'End time cannot be before start time';
+            }
+            if ($this->end < new DateTime()) {
+                $endErr = 'Event is in the past';
+            }
         }
         return(array($end, $endErr));
     }
 
     public function checkBand($band){
+        $bandErr = '';
         if (strlen($band) > 255){
             $bandErr = 'Too long';
         }
@@ -87,10 +97,12 @@ class AddEvent {
     }
 
     public function checkDetails($details){
-        $bandErr;
+        $detailsErr = '';
         $this->details = $details;
-        return (array($band, $bandErr));
+        return (array($details, $detailsErr));
     }
+
+    # Event creation
 
     private function _addToDB($created){
         setupDatabase(1);
@@ -116,7 +128,7 @@ class AddEvent {
         $client->setScopes(['https://www.googleapis.com/auth/calendar']);
         $service = new Google_Service_Calendar($client);
 
-        $calendarId = 'trevs.mashroom@gmail.com';
+        $calendarId = $config['calendarID'];
 
         $calEvent = new Google_Service_Calendar_Event(array(
         'summary' => 'Booking: ' . ((empty($this->band)) ? ($USER->fullName):($this->band)),
@@ -151,12 +163,77 @@ class AddEvent {
            return FALSE;
        }
        else {
-           $created = $this->_addToCal();
-           if (empty($this->google_ID)) {return FALSE;}
-           $this->_addToDB($created);
+            setupDatabase(1);
+            $slotTaken = !empty(DB::query("SELECT * FROM calendar WHERE start < %t && end > %t && deleted = 0;", $this->end, $this->start));
+            if ($slotTaken) {
+                $this->addErr = 'Slot unavalible';
+                return FALSE;
+            }
+            else{
+                $created = $this->_addToCal();
+                if (empty($this->google_ID)) {return FALSE;}
+                $created = $this->_addToDB($created);
+                if (!$created){
+                    $this->_deleteDB($this->google_ID);
+                }
+            }
        }
        return TRUE;
     }
 
+    # Event deletion
+
+    private function _deleteDB($google_id){
+        setupDatabase(1);
+        $result = DB::query("UPDATE calendar SET deleted=1 WHERE google_id = %s", $google_id);
+        return $result;
+    }
+
+    private function _deleteCal($google_id){
+        global $config, $USER;
+        try {
+            $client = new Google_Client();
+            $client->setApplicationName("Mash Booking");
+            $client->setAuthConfig($config['keyFile']);
+            $client->setScopes(['https://www.googleapis.com/auth/calendar']);
+            $service = new Google_Service_Calendar($client);
+
+            $calendarId = $config['calendarID'];
+
+            $service->events->delete($calendarId, $google_id);
+        }
+        catch(Exception $e) {
+            return FALSE;
+        }
+        return TRUE;
+    }
+
+    public function deleteEvent($google_id, $checkUser) {
+        if ($checkUser) {
+            global $USER;
+            setupDatabase(1);
+            if (DB::query("SELECT CASE WHEN (SELECT owner FROM calendar where google_id = %s && deleted = 0) = %s THEN False ELSE True END AS disallowed;", $google_id, $USER->username)[0]['disallowed']){
+                return FALSE;
+            }
+        }
+        $sucess = $this->_deleteCal($google_id);
+        if ($sucess){
+            $db = $this->_deleteDB($google_id);
+            if (!$db){
+                sleep(4);
+                $this->_deleteDB($google_id);
+            }
+        }
+        return TRUE;
+    }
+
+    # Event displaying
+    
+    public function listEvents() {
+        global $USER;
+        setupDatabase(1);
+        $events = DB::query("SELECT start, end, band, details, google_id FROM calendar WHERE end >= NOW() and owner = %s and deleted = FALSE", $USER->username);
+        return $events;
+    }
+    
 }
-?>

@@ -26,7 +26,7 @@
         $nameErr = $startErr = $dateErr = $endErr = $detailsErr = "";
         $name = $start = $date = $end = $details = "";
         $valid = FALSE;
-        $booking = new AddEvent;
+        $booking = new Event;
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $valid = TRUE;
@@ -102,9 +102,15 @@
         End time: <input type="text" class="timepicker" name="end" value="<?php echo $end;?>">
         <span class="error">* <?php echo $endErr;?></span>
         <br><br>
-        Other details: <textarea name="details" value="<?php echo $details;?>"></textarea>
+        Other details: <textarea name="details"><?php echo $details;?></textarea>
         <span class="error"><?php echo $detailsErr;?></span>
-        <br><br>
+        <br>
+        <?php
+        if (isset($booking->addErr)){
+            echo '<br>' . $booking->addErr . '<br>';
+        }
+        ?>
+        <br>
         <input type="submit" name="submit" value="Submit">  
         </form>
 

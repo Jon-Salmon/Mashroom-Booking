@@ -17,5 +17,6 @@
     <ul class="nav global">
         <li><a href=<?php echo HTTP_ROOT . "index.php"?>>Home</a></li>
         <li><a href=<?php echo HTTP_ROOT . "book.php"?>>Book</a></li>
+        <li><a href=<?php echo HTTP_ROOT . "bookings.php"?>>My Bookings</a></li>
     </ul>
 </div>

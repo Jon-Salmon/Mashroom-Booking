@@ -39,6 +39,7 @@ $config = array(
         )
     ),
     "keyFile" => LIBRARY_PATH . '/../service-account-credentials.json',
+    "calendarID" => 'trevs.mashroom@gmail.com',
     "urls" => array(
         "baseUrl" => "http://example.com"
     ),
