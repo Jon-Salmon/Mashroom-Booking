@@ -62,6 +62,13 @@ $config = array(
 require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
 require_once(LIBRARY_PATH . "/vendor/autoload.php");
 
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+$log = new Logger('Mash');
+$log->pushHandler(new StreamHandler(dirname(__FILE__) . '/errors.log', Logger::WARNING));
+
+
 $DB = new MeekroDB($config["db"]["db1"]["host"], $config["db"]["db1"]["username"], $config["db"]["db1"]["password"], $config["db"]["db1"]["dbname"]);
 
 /*

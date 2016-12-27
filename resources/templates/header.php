@@ -13,6 +13,7 @@
     <title>Simple Site</title>
     <link href="<?php echo HTTP_ROOT ?>css/bootstrap.min.css" rel="stylesheet">    
     <link href="<?php echo HTTP_ROOT ?>css/navbar-static-top.css" rel="stylesheet">
+    <link rel='stylesheet' href='<?php echo HTTP_ROOT ?>css/fullcalendar.css' />
 </head>
  
 <body>
