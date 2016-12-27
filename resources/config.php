@@ -38,6 +38,12 @@ $config = array(
             "host" => "jonny.duckdns.org"
         )
     ),
+    "email" => array(
+        "host" => "smtp.gmail.com",
+        "port" => 465,
+        "username" => "trevs.mashroom@gmail.com",
+        "password" => "thecakeisalie"
+    ),
     "keyFile" => LIBRARY_PATH . '/../service-account-credentials.json',
     "calendarID" => 'trevs.mashroom@gmail.com',
     "urls" => array(
@@ -53,14 +59,20 @@ $config = array(
 );
  
  
+require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
+require_once(LIBRARY_PATH . "/vendor/autoload.php");
 
+$DB = new MeekroDB($config["db"]["db1"]["host"], $config["db"]["db1"]["username"], $config["db"]["db1"]["password"], $config["db"]["db1"]["dbname"]);
 
 /*
-    Enviroment variables
+    Standard includes and Global variables
 */
 $_ENV["REMOTE_USER"]="nwng84";
+#$_ENV["REMOTE_USER"]="bfmm57";
 
+require_once(LIBRARY_PATH . "/common.php");
 require_once(CLASSES_PATH . "/user.php");
+
 $USER = new User($_ENV["REMOTE_USER"]);
 
 date_default_timezone_set('Europe/London');

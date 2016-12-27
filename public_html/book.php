@@ -4,7 +4,6 @@
     require_once("../resources/config.php");
      
     require_once(CLASSES_PATH . "/events.php");
-    require_once(LIBRARY_PATH . "/common.php");
     require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
 
     require_once(TEMPLATES_PATH . "/header.php");
@@ -14,6 +13,7 @@
 <script>
     $(document).ready(function(){
         $('input.timepicker').timepicker({
+             'scrollDefault': 'now' 
         });
     });
 </script>
@@ -26,7 +26,7 @@
         $nameErr = $startErr = $dateErr = $endErr = $detailsErr = "";
         $name = $start = $date = $end = $details = "";
         $valid = FALSE;
-        $booking = new Event;
+        $booking = new Event($DB);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $valid = TRUE;
@@ -93,13 +93,13 @@
         Booking name: <input type="text" name="name" value="<?php echo $name;?>">
         <span class="error"><?php echo $nameErr;?></span>
         <br><br>
-        Date: <input type="text" id="datepicker" name="date" value="<?php echo $date;?>">
+        Date: <input type="text" id="datepicker" name="date" autocomplete="off" value="<?php echo $date;?>">
         <span class="error">* <?php echo $dateErr;?></span>
         <br><br>
-        Start time: <input type="text" class="timepicker" name="start" value="<?php echo $start;?>">
+        Start time: <input type="text" class="timepicker" name="start" autocomplete="off" value="<?php echo $start;?>">
         <span class="error">* <?php echo $startErr;?></span>
         <br><br>
-        End time: <input type="text" class="timepicker" name="end" value="<?php echo $end;?>">
+        End time: <input type="text" class="timepicker" name="end" autocomplete="off" value="<?php echo $end;?>">
         <span class="error">* <?php echo $endErr;?></span>
         <br><br>
         Other details: <textarea name="details"><?php echo $details;?></textarea>
@@ -116,3 +116,5 @@
 
     </div>
 </div>
+
+<?php require_once(TEMPLATES_PATH . "/footer.php");?>

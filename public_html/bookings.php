@@ -4,14 +4,13 @@
      
     require_once(TEMPLATES_PATH . "/header.php");
     require_once(CLASSES_PATH . "/events.php");
-    require_once(LIBRARY_PATH . "/common.php");
 ?>
 <div id="container">
     <div id="content">
         <!-- content -->
 
         <?php
-        $events = new Event;
+        $events = new Event($DB);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (!empty($_POST['google_id'])) {
@@ -19,11 +18,12 @@
             }
         }
 
-        $bookings = $events->listEvents();
+        $bookings = $events->listEvents(FALSE);
         
         ?>
 
-        <table>
+<table class="table table-hover">
+            <thead>
             <tr>
                 <th>Booking Name</th>
                 <th>Date</th>
@@ -32,6 +32,8 @@
                 <th>Details</th>
                 <th>Delete</th>
             </tr>
+            </thead>
+            <tbody>
             <?php
                 foreach ($bookings as $row) {
                     $band = $row['band'];
@@ -58,7 +60,9 @@
                     echo "</tr>";
                 }
             ?>
+            </tbody>
         </table>
 
     </div>
 </div>
+<?php require_once(TEMPLATES_PATH . "/footer.php");?>

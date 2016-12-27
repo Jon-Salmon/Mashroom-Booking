@@ -1,5 +1,6 @@
 <?php
 class Event {
+    protected $DB;
     private $start;
     private $end;
     private $google_ID;
@@ -11,9 +12,10 @@ class Event {
     private $date;
     
 
-    function __construct(){
+    function __construct($db){
         require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
         require_once(LIBRARY_PATH . "/google/vendor/autoload.php");
+        $this->DB = $db;
     }
     
     # Functions to validate and set inputs for event creatition
@@ -105,8 +107,7 @@ class Event {
     # Event creation
 
     private function _addToDB($created){
-        setupDatabase(1);
-        $result = DB::insert('calendar', array(
+        $result = $this->DB->insert('calendar', array(
             'start' => $this->start,
             'end' => $this->end,
             'google_id' => $this->google_ID,
@@ -163,8 +164,7 @@ class Event {
            return FALSE;
        }
        else {
-            setupDatabase(1);
-            $slotTaken = !empty(DB::query("SELECT * FROM calendar WHERE start < %t && end > %t && deleted = 0;", $this->end, $this->start));
+            $slotTaken = !empty($this->DB->query("SELECT * FROM calendar WHERE start < %t && end > %t && deleted = 0;", $this->end, $this->start));
             if ($slotTaken) {
                 $this->addErr = 'Slot unavalible';
                 return FALSE;
@@ -184,8 +184,7 @@ class Event {
     # Event deletion
 
     private function _deleteDB($google_id){
-        setupDatabase(1);
-        $result = DB::query("UPDATE calendar SET deleted=1 WHERE google_id = %s", $google_id);
+        $result = $this->DB->query("UPDATE calendar SET deleted=1 WHERE google_id = %s", $google_id);
         return $result;
     }
 
@@ -211,8 +210,7 @@ class Event {
     public function deleteEvent($google_id, $checkUser) {
         if ($checkUser) {
             global $USER;
-            setupDatabase(1);
-            if (DB::query("SELECT CASE WHEN (SELECT owner FROM calendar where google_id = %s && deleted = 0) = %s THEN False ELSE True END AS disallowed;", $google_id, $USER->username)[0]['disallowed']){
+            if ($this->DB->query("SELECT CASE WHEN (SELECT owner FROM calendar where google_id = %s && deleted = 0) = %s THEN False ELSE True END AS disallowed;", $google_id, $USER->username)[0]['disallowed']){
                 return FALSE;
             }
         }
@@ -229,10 +227,14 @@ class Event {
 
     # Event displaying
     
-    public function listEvents() {
-        global $USER;
-        setupDatabase(1);
-        $events = DB::query("SELECT start, end, band, details, google_id FROM calendar WHERE end >= NOW() and owner = %s and deleted = FALSE", $USER->username);
+    public function listEvents($admin) {
+        if (!$admin) {
+            global $USER;
+            $events = $this->DB->query("SELECT start, end, band, details, google_id FROM calendar WHERE end >= NOW() and owner = %s and deleted = FALSE ORDER BY start", $USER->username);
+        }
+        else {
+            $events = $this->DB->query("SELECT start, end, band, details, google_id FROM calendar WHERE end >= NOW() and deleted = FALSE ORDER BY start");
+        }
         return $events;
     }
     
