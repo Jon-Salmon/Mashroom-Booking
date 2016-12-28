@@ -71,6 +71,20 @@ $log->pushHandler(new StreamHandler(dirname(__FILE__) . '/errors.log', Logger::W
 
 $DB = new MeekroDB($config["db"]["db1"]["host"], $config["db"]["db1"]["username"], $config["db"]["db1"]["password"], $config["db"]["db1"]["dbname"]);
 
+$host = $config["db"]["db1"]["host"];
+$db = $config["db"]["db1"]["dbname"];
+$user = $config["db"]["db1"]["username"];
+$pass = $config["db"]["db1"]["password"];
+$charset = 'utf8';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$opt = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+$PDO = new PDO($dsn, $user, $pass, $opt);
+
 /*
     Standard includes and Global variables
 */
@@ -79,8 +93,10 @@ $_ENV["REMOTE_USER"]="nwng84";
 
 require_once(LIBRARY_PATH . "/common.php");
 require_once(CLASSES_PATH . "/user.php");
+require_once(CLASSES_PATH . "/admins.php");
 
 $USER = new User($_ENV["REMOTE_USER"]);
+$ADMINS = new Admins();
 
 date_default_timezone_set('Europe/London');
 
@@ -88,5 +104,7 @@ date_default_timezone_set('Europe/London');
     Error reporting.
 */
 ini_set("error_reporting", "true");
+#ini_set('display_errors', 'Off');
 error_reporting(E_ALL|E_STRCT);
+#eror_reporting(0);
 ?>

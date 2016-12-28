@@ -16,11 +16,11 @@
         <!-- content -->
 
         <?php
-        $events = new Event($DB);
+        $events = new Event($PDO);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            if (!empty($_POST['google_id'])) {
-                $events->deleteEvent($_POST['google_id'], FALSE);
+            if (!empty($_POST['id'])) {
+                $events->deleteEvent($_POST['id'], FALSE);
             }
         }
 
@@ -32,6 +32,7 @@
             <thead>
             <tr>
                 <th>Booking Name</th>
+                <th>Booked By</th>
                 <th>Date</th>
                 <th>Start</th>
                 <th>End</th>
@@ -44,12 +45,14 @@
                 foreach ($bookings as $row) {
                     $band = $row['band'];
                     $details = $row['details'];
-                    $google_id = $row['google_id'];
+                    $id = $row['id'];
+                    $name = $row['name'];
                     $start = new DateTime($row['start']);
                     $end = new DateTime($row['end']);
 
                     echo '<tr>';
                     echo '<td>' . $band . '</td>';
+                    echo '<td>' . $name . '</td>';
                     echo '<td>' . $start->format("d/m/Y") . '</td>';
                     echo '<td>' . $start->format("H:i") . '</td>';
                     echo '<td>' . $end->format("H:i") . '</td>';
@@ -58,7 +61,7 @@
                     echo "
                     <td>
                     <form method=\"post\" action=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . "\">  
-                    <input type=\"hidden\" name=\"google_id\" value=\"" . $google_id .  "\">
+                    <input type=\"hidden\" name=\"id\" value=\"" . $id .  "\">
                     <input type=\"submit\" name=\"submit\" value=\"Delete\">  
                     </form>
                     </td>";

@@ -10,11 +10,11 @@
         <!-- content -->
 
         <?php
-        $events = new Event($DB);
+        $events = new Event($PDO);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            if (!empty($_POST['google_id'])) {
-                $events->deleteEvent($_POST['google_id'], TRUE);
+            if (!empty($_POST['id'])) {
+                $events->deleteEvent($_POST['id'], TRUE);
             }
         }
 
@@ -38,7 +38,7 @@
                 foreach ($bookings as $row) {
                     $band = $row['band'];
                     $details = $row['details'];
-                    $google_id = $row['google_id'];
+                    $id = $row['id'];
                     $start = new DateTime($row['start']);
                     $end = new DateTime($row['end']);
 
@@ -52,7 +52,7 @@
                     echo "
                     <td>
                     <form method=\"post\" action=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . "\">  
-                    <input type=\"hidden\" name=\"google_id\" value=\"" . $google_id .  "\">
+                    <input type=\"hidden\" name=\"id\" value=\"" . $id .  "\">
                     <input type=\"submit\" name=\"submit\" value=\"Delete\">  
                     </form>
                     </td>";

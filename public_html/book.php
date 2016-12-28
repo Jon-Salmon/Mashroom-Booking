@@ -26,7 +26,7 @@
         $nameErr = $startErr = $dateErr = $endErr = $detailsErr = "";
         $name = $start = $date = $end = $details = "";
         $valid = FALSE;
-        $booking = new Event($DB);
+        $booking = new Event($PDO);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $valid = TRUE;

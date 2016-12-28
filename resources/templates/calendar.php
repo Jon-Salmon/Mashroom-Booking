@@ -14,7 +14,8 @@ $(document).ready(function() {
             left: 'title',
             right: 'prev,next today agendaWeek,month'
         },
-        events: '<?php echo HTTP_ROOT ?>calendar/events.php',
+        allDaySlot: false,
+        events: '<?php echo HTTP_ROOT ?>ajax/events.php',
         // put your options and callbacks here
     })
 

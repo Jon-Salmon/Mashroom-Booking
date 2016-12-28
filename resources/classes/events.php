@@ -1,11 +1,13 @@
 <?php
 class Event {
-    protected $DB;
+    protected $PDO;
     private $start;
     private $end;
     private $google_ID;
     private $details;
     private $band;
+    private $title;
+    private $description;
 
     public $addErr = '';
     
@@ -13,9 +15,9 @@ class Event {
     
 
     function __construct($db){
-        require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
-        require_once(LIBRARY_PATH . "/google/vendor/autoload.php");
-        $this->DB = $db;
+        #require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
+        #require_once(LIBRARY_PATH . "/google/vendor/autoload.php");
+        $this->PDO = $db;
     }
     
     # Functions to validate and set inputs for event creatition
@@ -106,76 +108,57 @@ class Event {
 
     # Event creation
 
-    private function _addToDB($created){
-        $result = $this->DB->insert('calendar', array(
-            'start' => $this->start,
-            'end' => $this->end,
-            'google_id' => $this->google_ID,
-            'owner' => $_ENV["REMOTE_USER"],
-            'details' => $this->details,
-            'band' => $this->band,
-            'created' => $created
-        ));
+    private function _addToDB(){
+        global $USER;
+        $stmt = $this->PDO->prepare("INSERT INTO calendar(start,end,owner,name,details,band,created,title,description) VALUES(:start,:end,:owner,:name,:details,:band,NOW(),:title,:description)");
+        $stmt->execute(array(':start' => $this->start->format('Y-m-d H:i:s'), ':end' => $this->end->format('Y-m-d H:i:s'), ':owner' => $_ENV["REMOTE_USER"], ':name' => $USER->fullName, ':details' => $this->details, ':band' => $this->band, ':title' => $this->title, ':description' => $this->description));
+        $result = $stmt->rowCount();
+
+        #$result = $this->DB->insert('calendar', array(
+        #    'start' => $this->start,
+        #    'end' => $this->end,
+        #    'owner' => $_ENV["REMOTE_USER"],
+        #    'details' => $this->details,
+        #    'band' => $this->band,
+        #    'created' => new DateTime(),
+        #    'title' => $this->title,
+        #    'description' => $this->description
+        #));
         
         if ($result == 1) {return TRUE;}
-        else {return FALSE;}
+        else {
+            global $log;
+            $log->error($result);
+            die();
+            }
     }
 
-    private function _addToCal(){
-        global $config, $USER;
-        $client = new Google_Client();
-        $client->setApplicationName("Mash Booking");
-        $client->setAuthConfig($config['keyFile']);
-        $client->setScopes(['https://www.googleapis.com/auth/calendar']);
-        $service = new Google_Service_Calendar($client);
-
-        $calendarId = $config['calendarID'];
-
-        $calEvent = new Google_Service_Calendar_Event(array(
-        'summary' => 'Booking: ' . ((empty($this->band)) ? ($USER->fullName):($this->band)),
-        'description' => ((empty($this->band)) ? (""):("Booking: " . $this->band . "\n")) . 
-            "Booked by: " . $USER->fullName . "\n\n" .
-             $this->details . "\n\n" .
-            "Created: " . date("d-m-Y H:i:s"),
-        'start' => array(
-            'dateTime' => $this->start->format(\DateTime::RFC3339),
-            'timeZone' => 'Europe/London',
-        ),
-        'end' => array(
-            'dateTime' => $this->end->format(\DateTime::RFC3339),
-            'timeZone' => 'Europe/London',
-        ),
-        'reminders' => array(
-            'useDefault' => FALSE,
-            'overrides' => array(
-            array('method' => 'email', 'minutes' => 24 * 60),
-            array('method' => 'popup', 'minutes' => 10),
-            ),
-        ),
-        ));
-
-        $event = $service->events->insert($calendarId, $calEvent);
-        $this->google_ID = $event->id;
-        return (new DateTime($event->created));
-    }
 
     public function createEvent(){
+        global $USER;
+        $this->title = ((empty($this->band)) ? ($USER->fullName):($this->band));
+        $this->description = ((empty($this->band)) ? (""):("Booking: " . $this->band . "\n")) . 
+            "Booked by: " . $USER->fullName . "\n\n" .
+             ((empty($this->details)) ? (""):($this->details . "\n\n")) .
+            "Created: " . date("d-m-Y H:i:s");
+
+
        if(!isset($this->start) || !isset($this->end)) {
            return FALSE;
        }
        else {
-            $slotTaken = !empty($this->DB->query("SELECT * FROM calendar WHERE start < %t && end > %t && deleted = 0;", $this->end, $this->start));
+
+            $stmt = $this->PDO->prepare('SELECT * FROM calendar WHERE start < ? && end > ? && deleted = 0');
+            $stmt->execute([$this->end->format('Y-m-d H:i:s'), $this->start->format('Y-m-d H:i:s')]);
+            $slotTaken = !empty($stmt->fetch());
+
+            #$slotTaken = !empty($this->DB->query("SELECT * FROM calendar WHERE start < %t && end > %t && deleted = 0;", $this->end, $this->start));
             if ($slotTaken) {
                 $this->addErr = 'Slot unavalible';
                 return FALSE;
             }
             else{
-                $created = $this->_addToCal();
-                if (empty($this->google_ID)) {return FALSE;}
-                $created = $this->_addToDB($created);
-                if (!$created){
-                    $this->_deleteDB($this->google_ID);
-                }
+                $created = $this->_addToDB();
             }
        }
        return TRUE;
@@ -183,44 +166,34 @@ class Event {
 
     # Event deletion
 
-    private function _deleteDB($google_id){
-        $result = $this->DB->query("UPDATE calendar SET deleted=1 WHERE google_id = %s", $google_id);
+    private function _deleteDB($id){
+
+        $stmt = $this->PDO->prepare("UPDATE calendar SET deleted=1 WHERE id = ?");
+        $result = $stmt->execute([$id]);
+
+        #$result = $this->DB->query("UPDATE calendar SET deleted=1 WHERE id = %s", $id);
         return $result;
     }
 
-    private function _deleteCal($google_id){
-        global $config, $USER;
-        try {
-            $client = new Google_Client();
-            $client->setApplicationName("Mash Booking");
-            $client->setAuthConfig($config['keyFile']);
-            $client->setScopes(['https://www.googleapis.com/auth/calendar']);
-            $service = new Google_Service_Calendar($client);
 
-            $calendarId = $config['calendarID'];
-
-            $service->events->delete($calendarId, $google_id);
-        }
-        catch(Exception $e) {
-            return FALSE;
-        }
-        return TRUE;
-    }
-
-    public function deleteEvent($google_id, $checkUser) {
+    public function deleteEvent($id, $checkUser) {
         if ($checkUser) {
             global $USER;
-            if ($this->DB->query("SELECT CASE WHEN (SELECT owner FROM calendar where google_id = %s && deleted = 0) = %s THEN False ELSE True END AS disallowed;", $google_id, $USER->username)[0]['disallowed']){
+
+            $stmt = $this->PDO->prepare("SELECT CASE WHEN (SELECT owner FROM calendar where id = :id && deleted = 0) = :user THEN False ELSE True END AS disallowed");
+            $stmt->execute([':id' => $id, ':user' => $USER->username]);
+            $disallowed = $stmt->fetch()['disallowed'];
+
+
+            if ($disallowed){
                 return FALSE;
             }
         }
-        $sucess = $this->_deleteCal($google_id);
-        if ($sucess){
-            $db = $this->_deleteDB($google_id);
-            if (!$db){
-                sleep(4);
-                $this->_deleteDB($google_id);
-            }
+        $db = $this->_deleteDB($id);
+        if (!$db){
+            global $log;
+            $log->error($db);
+            return False;
         }
         return TRUE;
     }
@@ -230,10 +203,16 @@ class Event {
     public function listEvents($admin) {
         if (!$admin) {
             global $USER;
-            $events = $this->DB->query("SELECT start, end, band, details, google_id FROM calendar WHERE end >= NOW() and owner = %s and deleted = FALSE ORDER BY start", $USER->username);
+            $stmt = $this->PDO->prepare("SELECT start, end, band, details, id FROM calendar WHERE end >= NOW() and owner = ? and deleted = FALSE ORDER BY start");
+            $stmt->execute([$USER->username]);
+            $events = $stmt->fetchAll();
+            
+            #$events = $this->DB->query("SELECT start, end, band, details, id FROM calendar WHERE end >= NOW() and owner = %s and deleted = FALSE ORDER BY start", $USER->username);
         }
         else {
-            $events = $this->DB->query("SELECT start, end, band, details, google_id FROM calendar WHERE end >= NOW() and deleted = FALSE ORDER BY start");
+            $stmt = $this->PDO->query("SELECT start, end, band, details, id, name FROM calendar WHERE end >= NOW() and deleted = FALSE ORDER BY start");
+            $events = $stmt->fetchAll();
+            #$events = $this->DB->query("SELECT start, end, band, details, id FROM calendar WHERE end >= NOW() and deleted = FALSE ORDER BY start");
         }
         return $events;
     }

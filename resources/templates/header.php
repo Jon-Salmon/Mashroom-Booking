@@ -7,10 +7,13 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    
+    <script src="<?php echo HTTP_ROOT?>js/induct_ajax.js"></script>
+    
+    <title>Mash Room</title>
+    
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="css/jquery.timepicker.min.css">
-    <title>Simple Site</title>
     <link href="<?php echo HTTP_ROOT ?>css/bootstrap.min.css" rel="stylesheet">    
     <link href="<?php echo HTTP_ROOT ?>css/navbar-static-top.css" rel="stylesheet">
     <link rel='stylesheet' href='<?php echo HTTP_ROOT ?>css/fullcalendar.css' />
@@ -46,5 +49,18 @@
         </div><!--/.nav-collapse -->
       </div>
     </nav>
+
+
+<div id="form-messages"></div>
+<form id="ajax-contact" method="post" action="<?php echo HTTP_ROOT ?>ajax/induct.php">
+        <input type="hidden" name="induct" value="true">
+
+    <div class="field">
+        <button type="submit">Send</button>
+    </div>
+</form>
+
+
+
 
     <div class="container">

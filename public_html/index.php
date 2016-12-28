@@ -6,14 +6,12 @@
     require_once(TEMPLATES_PATH . "/header.php");
 ?>
 <div id="container">
-    <div id="content">
-        <!-- content -->
         
+        <?php $test = new Admins($PDO); ?>
         <?php include(TEMPLATES_PATH . "/calendar.php");?>
 
         <?php #email("trevs.mashroom@gmail.com", "The Mash Room", "jonathan.salmon@hotmail.co.uk", "Composer test", "thas this worked?"); ?>
 
-    </div>
 </div>
 
 <?php require_once(TEMPLATES_PATH . "/footer.php");?>
