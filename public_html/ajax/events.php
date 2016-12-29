@@ -5,7 +5,7 @@ require_once("../../resources/config.php");
 $start = $_GET["start"];
 $end = $_GET["end"];
 
-$stmt = $PDO->prepare('SELECT id, band as title, start, end, details AS description FROM calendar WHERE end > :start && start < :end && deleted = 0 ORDER BY id');
+$stmt = $PDO->prepare('SELECT id, title, start, end, description FROM calendar WHERE end > :start && start < :end && deleted = 0 ORDER BY id');
 $stmt->execute([':start' => $start, ':end' => $end]);
 $result = $stmt->fetchAll();
             

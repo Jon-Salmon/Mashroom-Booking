@@ -1,8 +1,8 @@
 <?php
 class Event {
     protected $PDO;
-    private $start;
-    private $end;
+    public $start;
+    public $end;
     private $google_ID;
     private $details;
     private $band;

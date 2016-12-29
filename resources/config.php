@@ -44,8 +44,8 @@ $config = array(
         "username" => "trevs.mashroom@gmail.com",
         "password" => "thecakeisalie"
     ),
-    "keyFile" => LIBRARY_PATH . '/../service-account-credentials.json',
-    "calendarID" => 'trevs.mashroom@gmail.com',
+    #"keyFile" => LIBRARY_PATH . '/../service-account-credentials.json',
+    #"calendarID" => 'trevs.mashroom@gmail.com',
     "urls" => array(
         "baseUrl" => "http://example.com"
     ),
@@ -59,17 +59,19 @@ $config = array(
 );
  
  
-require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
+#require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
 require_once(LIBRARY_PATH . "/vendor/autoload.php");
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+ob_start();
+
 $log = new Logger('Mash');
 $log->pushHandler(new StreamHandler(dirname(__FILE__) . '/errors.log', Logger::WARNING));
 
 
-$DB = new MeekroDB($config["db"]["db1"]["host"], $config["db"]["db1"]["username"], $config["db"]["db1"]["password"], $config["db"]["db1"]["dbname"]);
+#$DB = new MeekroDB($config["db"]["db1"]["host"], $config["db"]["db1"]["username"], $config["db"]["db1"]["password"], $config["db"]["db1"]["dbname"]);
 
 $host = $config["db"]["db1"]["host"];
 $db = $config["db"]["db1"]["dbname"];
@@ -85,6 +87,19 @@ $opt = [
 ];
 $PDO = new PDO($dsn, $user, $pass, $opt);
 
+$host = $config["db"]["users"]["host"];
+$db = $config["db"]["users"]["dbname"];
+$user = $config["db"]["users"]["username"];
+$pass = $config["db"]["users"]["password"];
+$charset = 'utf8';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$opt = [
+PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+PDO::ATTR_EMULATE_PREPARES   => false,
+];
+$user_db = new PDO($dsn, $user, $pass, $opt);
 /*
     Standard includes and Global variables
 */

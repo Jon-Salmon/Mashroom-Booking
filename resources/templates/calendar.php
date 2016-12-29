@@ -15,6 +15,21 @@ $(document).ready(function() {
             right: 'prev,next today agendaWeek,month'
         },
         allDaySlot: false,
+        businessHours:
+            {
+                    start: '8:00',
+                    end:   '22:00',
+                    dow: [ 0, 1, 2, 3, 4, 5, 6]
+            },
+            eventRender: function (event, element) {
+        element.attr('href', 'javascript:void(0);');
+        element.click(function() {
+            $("#startTime").html(moment(event.start).format('MMM Do h:mm A'));
+            $("#endTime").html(moment(event.end).format('MMM Do h:mm A'));
+            $("#eventInfo").html(event.description.replace(/\n/g, "<br />"));
+            $("#eventContent").dialog({ modal: true, title: event.title, width:350});
+        });
+    },
         events: '<?php echo HTTP_ROOT ?>ajax/events.php',
         // put your options and callbacks here
     })
@@ -22,4 +37,9 @@ $(document).ready(function() {
 });
 
 </script>
+<div id="eventContent" title="Event Details" style="display:none;">
+    <p id="eventInfo"></p>
+    Start: <span id="startTime"></span><br>
+    End: <span id="endTime"></span><br><br>
+</div>
 <div id='calendar'></div>

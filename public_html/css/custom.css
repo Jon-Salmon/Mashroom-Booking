@@ -5,3 +5,7 @@
   font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
   margin: 0 auto;
   }
+
+  .dialog {
+    display: none;
+  }
