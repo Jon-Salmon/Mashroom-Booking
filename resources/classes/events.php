@@ -22,88 +22,59 @@ class Event {
     
     # Functions to validate and set inputs for event creatition
 
-    private function _validateDate($date)
+    private function _validateTime($time)
     {
-        $d = DateTime::createFromFormat('d/m/Y', $date);
-        return $d && $d->format('d/m/Y') === $date;
-    }
-
-    public function checkDate($date){
-        $dateErr = '';
-        if (empty($date)){
-            $dateErr = "Date is required";
-        }
-        elseif (!$this->_validateDate($date)){
-            $dateErr = "Date is invalid";
-        }
-        else {
-            $this->date = DateTime::createFromFormat('d/m/Y', $date);
-        }
-        return(array($date, $dateErr));
-    }
-
-    private function _checkTime($time){
-        $timeErr = '';
-        $cleanTime ='';
-        if (empty($time)){
-            $timeErr = "Time is required";
-        }
-        else {
-            $cleanTime = DateTime::createFromFormat('g:ia', $time);
-            if ($cleanTime == FALSE){
-                $timeErr = "Time is invalid";
-            }
-        }
-        return(array($cleanTime, $timeErr));
+        return DateTime::createFromFormat('Y-m-d\TH:i:s.u\Z', $time);
     }
 
     public function checkStart($start){
-        list($time, $startErr) = $this->_checkTime($start);
-        if ($time != FALSE){
-
-            list($hour, $min) = explode(':', $time->format('H:i'));
-            if ($this->date != FALSE){
-                $this->start = clone $this->date;
-                $this->start->setTime($hour, $min);
-            }
+        $time = $this->_validateTime($start);
+        $startErr = '';
+        if ($time == FALSE){
+            $startErr = 'No valid start time specified.';
+        } else {
+            $this->start = $time;
         }
-        return(array($start, $startErr));
+        return $startErr;
     }
 
     public function checkEnd($end){
-        list($time, $endErr) = $this->_checkTime($end);
-        if ($time != FALSE){
-
-            list($hour, $min) = explode(':', $time->format('H:i'));
-            if ($this->date != FALSE){
-                $this->end = clone $this->date;
-                $this->end->setTime($hour, $min);
+        $time = $this->_validateTime($end);
+        $endErr = '';
+        if ($time == FALSE){
+            $endErr = 'No valid end time specified.';
+        } else {
+            if ($this->start->format('d/m/Y') == $time->format('d/m/Y')){
+                if ($time < $this->start) {
+                    $endErr = 'End time cannot be before start time';
+                } elseif ($time < new DateTime()) {
+                    $endErr = 'Event is in the past';
+                } else {
+                    $this->end = $time;
+                }
             }
-            if ($this->end < $this->start) {
-                $endErr = 'End time cannot be before start time';
-            }
-            if ($this->end < new DateTime()) {
-                $endErr = 'Event is in the past';
+            else {
+                $endErr = 'There is an problem with the times entered.';
             }
         }
-        return(array($end, $endErr));
+        return $endErr;
     }
 
     public function checkBand($band){
         $bandErr = '';
         if (strlen($band) > 255){
-            $bandErr = 'Too long';
+            $bandErr = 'Title too long';
         }
         else {
             $this->band = $band;
         }
-        return (array($band, $bandErr));
+        return $bandErr;
     }
 
     public function checkDetails($details){
         $detailsErr = '';
         $this->details = $details;
-        return (array($details, $detailsErr));
+        return $detailsErr;
     }
 
     # Event creation
@@ -129,7 +100,7 @@ class Event {
         else {
             global $log;
             $log->error($result);
-            die();
+            return FALSE;
             }
     }
 
@@ -144,7 +115,7 @@ class Event {
 
 
        if(!isset($this->start) || !isset($this->end)) {
-           return FALSE;
+           return array([FALSE, "Times not both set"]);
        }
        else {
 
@@ -154,14 +125,13 @@ class Event {
 
             #$slotTaken = !empty($this->DB->query("SELECT * FROM calendar WHERE start < %t && end > %t && deleted = 0;", $this->end, $this->start));
             if ($slotTaken) {
-                $this->addErr = 'Slot unavalible';
-                return FALSE;
+                return array([FALSE, "Slot unavalible"]);
             }
             else{
                 $created = $this->_addToDB();
             }
        }
-       return TRUE;
+        return array([$created, ""]);
     }
 
     # Event deletion

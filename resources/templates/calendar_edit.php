@@ -30,17 +30,33 @@ $(document).ready(function() {
         eventConstraint: "businessHours",
         selectConstraint: "businessHours",
         eventClick: function(calEvent, jsEvent, view) {
-            if (calEvent.editable == 1){
+            if (calEvent.editable == 1 && !calEvent.end.isBefore()){
             $('#eventDate').datepicker("set", calEvent.start);
             $('#eventStart').timepicker("setTime", new Date(calEvent.start));
             $('#eventEnd').timepicker("setTime", new Date(calEvent.end));
+            $('#eventEnd').timepicker('option', 'minTime', $('#eventStart').val());
             $('#calEventDialog #eventTitle').val(calEvent.title);
             $('#calEventDialog #eventDetails').val(calEvent.details);
+            allFields.removeClass( "ui-state-error" );
+            tips.text("");
             $("#calEventDialog").dialog("option", "buttons", [
                 {
                 text: "Save",
                 click: function() {
-                    $(this).dialog("close");
+                    var resultArray = updateEvent(calEvent.id);
+                    if (resultArray[0]){
+                        $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChange.php',
+                                data: {
+                                    action: 'change',
+                                    data: JSON.stringify(resultArray[1])
+                                },
+                                type: 'post',
+                                success: function(output) {
+                                            alert(output);
+                                            $('#calEventDialog').dialog("close");
+                                        }
+                        });
+                    }
                 }},
             {
                 text: "Delete",
@@ -88,31 +104,48 @@ $(document).ready(function() {
             $('#eventDate').datepicker("set", start);
             $('#eventStart').timepicker("setTime", new Date(start));
             $('#eventEnd').timepicker("setTime", new Date(end));
+            $('#eventEnd').timepicker('option', 'minTime', $('#eventStart').val());
             $('#calEventDialog #eventTitle').val("");
             $('#calEventDialog #eventDetails').val("");
+            allFields.removeClass( "ui-state-error" );
+            tips.text("");
             
+            if (start.isBefore()){
+                alert("event in the past");
+            }
+
+            $("#calEventDialog").dialog("option", "buttons", [
+                {
+                text: "Save",
+                click: function() {
+                    var resultArray = updateEvent(0);
+                    if (resultArray[0]){
+                            $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChange.php',
+                                    dataType: "json",
+                                    data: {
+                                        action: 'add',
+                                        data: JSON.stringify(resultArray[1])
+                                    },
+                                    type: 'post',
+                                    success: function(output) {
+                                                if (output[0]){
+                                                    $('#calendar').fullCalendar('refetchEvents');
+                                                    $('#calEventDialog').dialog("close");
+                                                } else {
+                                                    updateTips(output[1]);
+                                                }
+                                            }
+                            });
+                        }
+                }},
+            {
+                text: "Cancel",
+                click: function() {
+                    $(this).dialog("close");
+                }}
+            ]);
             $('#calEventDialog').dialog('open');
 
-				var title = prompt('Event Title:');
-				var eventData;
-				if (title) {
-					eventData = {
-						title: title,
-						start: start,
-						end: end
-					};
-                    $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChange.php',
-                            data: {
-                                action: 'add',
-                                data: JSON.stringify(eventData)
-                            },
-                            type: 'post',
-                            success: function(output) {
-                                        alert(output);
-                                    }
-                    });
-					$('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
-				}
 				$('#calendar').fullCalendar('unselect');
 			},
         eventOverlap: false,
@@ -189,9 +222,77 @@ $(document).ready(function() {
         }
 
     });
-});
+
+    var 
+ 
+      // From http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#e-mail-state-%28type=email%29
+      eventDate = $( "#eventDate" ),
+      eventStart = $( "#eventStart" ),
+      eventEnd = $( "#eventEnd" ),
+      eventTitle = $("#eventTitle"),
+      eventDetails = $("#eventDetails"),
+      allFields = $( [] ).add( eventDate).add( eventStart).add(eventEnd ).add(eventTitle ).add(eventDetails ),
+      tips = $( ".validateTips" );
+ 
+    function updateTips( t ) {
+      tips
+        .text( t )
+        .addClass( "ui-state-error" );
+      setTimeout(function() {
+        tips.removeClass( "ui-state-error", 1500 );
+      }, 500 );
+    }
+ 
+    function checkLength( o, n, min, max ) {
+      if ( o.length > max || o.length < min ) {
+        o.addClass( "ui-state-error" );
+        updateTips( "Length of " + n + " must be between " +
+          min + " and " + max + "." );
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    function checkSet( o, v) {
+      if ( v == null || v == ""  ) {
+        o.addClass( "ui-state-error" );
+        updateTips( "Invalid value");
+        return false;
+      } else {
+        return true;
+      }
+    }
+ 
+    function updateEvent(id) {
+        var valid = true;
+        allFields.removeClass( "ui-state-error" );
+
+        var data = {
+            'date' : eventDate.datepicker('get').toDate(),
+            'title': eventTitle.val(),
+            'details': eventDetails.val(),
+            'id': id
+        };
+    
+        data.start = eventStart.timepicker('getTime', data.date);
+        data.end = eventEnd.timepicker('getTime', data.date);
 
 
+        valid = valid && checkSet(eventStart, data.start);
+        valid = valid && checkSet(eventEnd, data.end);
+        
+        if (data.start > data.end){
+            updateTips("Cannot start and end times must be same day.");
+            eventEnd.addClass("ui-state-error");
+            valid = false;
+        }
+
+        valid = valid && checkLength(data.details, "title", 0, 255);
+ 
+      return [valid, data];
+    }
+  });
 
 </script>
 
@@ -202,7 +303,7 @@ $(document).ready(function() {
         <input type="text" name="eventTitle" class="form-control" id="eventTitle" /><br>
         <label for="eventDate">Date: </label>
         <div class="input-group date" id="eventDate" data-datepicker-format="DD-MM-YYYY">
-            <input name="eventDate" class="form-control" type="text" size="16">
+            <input name="eventDate" class="form-control" type="text" size="16" readonly>
             <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
         </div>
         <label for="eventStart">Start: </label>
@@ -213,6 +314,7 @@ $(document).ready(function() {
         <textarea name="eventDetails" class="form-control" id="eventDetails"></textarea><br>
         </fieldset>
     </form>
+  <p class="validateTips"></p>
 </div>
 
 <div id="eventContent" class="display" title="Event Details" style="display:none;">
