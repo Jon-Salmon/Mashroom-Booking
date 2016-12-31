@@ -115,7 +115,7 @@ class Event {
 
 
        if(!isset($this->start) || !isset($this->end)) {
-           return array([FALSE, "Times not both set"]);
+           return array(FALSE, "Times not both set");
        }
        else {
 
@@ -125,14 +125,69 @@ class Event {
 
             #$slotTaken = !empty($this->DB->query("SELECT * FROM calendar WHERE start < %t && end > %t && deleted = 0;", $this->end, $this->start));
             if ($slotTaken) {
-                return array([FALSE, "Slot unavalible"]);
+                return array(FALSE, "Slot unavalible");
             }
             else{
                 $created = $this->_addToDB();
             }
        }
-        return array([$created, ""]);
+        return array($created, "");
     }
+
+    # Edit event
+
+    private function _editEventDB($id){
+        global $USER;
+        $stmt = $this->PDO->prepare("UPDATE calendar SET start = :start, end = :end, details = :details, band = :band, title = :title, description = :description WHERE id = :id");
+        $result = $stmt->execute(array(':start' => $this->start->format('Y-m-d H:i:s'), ':end' => $this->end->format('Y-m-d H:i:s'), ':details' => $this->details, ':band' => $this->band, ':title' => $this->title, ':description' => $this->description, ':id' => $id));
+
+        if ($result == 1) {return TRUE;}
+        else {
+            global $log;
+            $log->error($result);
+            return FALSE;
+            }
+    }
+    
+    public function editEvent($id){
+        global $USER;
+        $this->title = ((empty($this->band)) ? ($USER->fullName):($this->band));
+        $this->description = ((empty($this->band)) ? (""):("Booking: " . $this->band . "\n")) . 
+            "Booked by: " . $USER->fullName . "\n\n" .
+             ((empty($this->details)) ? (""):($this->details . "\n\n")) .
+            "Created: " . date("d-m-Y H:i:s");
+
+
+       if(!isset($this->start) || !isset($this->end)) {
+           return array(FALSE, "Times not both set");
+       }
+       else {
+            $stmt = $this->PDO->prepare('SELECT owner FROM calendar WHERE id = ?');
+            $stmt->execute([$id]);
+            $alowedUser = $stmt->fetch()['owner'];
+
+            if ($alowedUser != $USER->username){
+                return array(FALSE, "Operation forbidden");
+            } else {
+                $stmt = $this->PDO->prepare('SELECT * FROM calendar WHERE start < ? && end > ? && deleted = 0 && id != ?');
+                $stmt->execute([$this->end->format('Y-m-d H:i:s'), $this->start->format('Y-m-d H:i:s'), $id]);
+                $slotTaken = !empty($stmt->fetch());
+
+                #$slotTaken = !empty($this->DB->query("SELECT * FROM calendar WHERE start < %t && end > %t && deleted = 0;", $this->end, $this->start));
+                if ($slotTaken) {
+                    global $log;
+                    return array(FALSE, "Slot unavalible");
+                }
+                else{
+                    $created = $this->_editEventDB($id);
+                }
+            }
+            
+
+       }
+        return array($created, "");
+    }
+    
 
     # Event deletion
 

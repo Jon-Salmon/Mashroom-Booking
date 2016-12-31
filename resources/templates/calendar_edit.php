@@ -46,15 +46,20 @@ $(document).ready(function() {
                     var resultArray = updateEvent(calEvent.id);
                     if (resultArray[0]){
                         $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChange.php',
+                                dataType: "json",
                                 data: {
                                     action: 'change',
                                     data: JSON.stringify(resultArray[1])
                                 },
                                 type: 'post',
-                                success: function(output) {
-                                            alert(output);
-                                            $('#calEventDialog').dialog("close");
-                                        }
+                                    success: function(output) {
+                                                if (output[0]){
+                                                    $('#calendar').fullCalendar('refetchEvents');
+                                                    $('#calEventDialog').dialog("close");
+                                                } else {
+                                                    updateTips(output[1]);
+                                                }
+                                            }
                         });
                     }
                 }},

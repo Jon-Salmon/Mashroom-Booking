@@ -71,3 +71,8 @@
 [2016-12-31 17:15:29] Mash.WARNING: DateTime::__set_state(array(    'date' => '2017-01-03 12:30:00.000000',    'timezone_type' => 3,    'timezone' => 'Europe/London', )) [] []
 [2016-12-31 17:16:34] Mash.WARNING: NULL [] []
 [2016-12-31 17:16:34] Mash.WARNING: DateTime::__set_state(array(    'date' => '2016-12-31 17:16:34.000000',    'timezone_type' => 3,    'timezone' => 'Europe/London', )) [] []
+[2016-12-31 18:20:53] Mash.WARNING: errro [] []
+[2016-12-31 18:27:56] Mash.WARNING:  [] []
+[2016-12-31 18:29:18] Mash.WARNING:  [] []
+[2016-12-31 18:30:20] Mash.WARNING: array (   0 =>    array (     0 => true,     1 => '',   ), ) [] []
+[2016-12-31 18:30:35] Mash.WARNING: array (   0 =>    array (     0 => false,     1 => 'Slot unavalible',   ), ) [] []
