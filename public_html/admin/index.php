@@ -35,6 +35,9 @@
         $admins = $ADMINS->getAll();
         
         ?>
+        
+        <button id="create-user">Create new user</button>
+        
         <table class="table table-hover">
             <thead>
             <tr>
@@ -154,21 +157,10 @@ END;
     function updateTips( t ) {
       tips
         .text( t )
-        .addClass( "ui-state-highlight" );
+        .addClass( "ui-state-error" );
       setTimeout(function() {
-        tips.removeClass( "ui-state-highlight", 1500 );
+        tips.removeClass( "ui-state-error", 1500 );
       }, 500 );
-    }
- 
-    function checkLength( o, n, min, max ) {
-      if ( o.val().length > max || o.val().length < min ) {
-        o.addClass( "ui-state-error" );
-        updateTips( "Length of " + n + " must be between " +
-          min + " and " + max + "." );
-        return false;
-      } else {
-        return true;
-      }
     }
  
     function checkRegexp( o, regexp, n ) {
@@ -186,23 +178,40 @@ END;
       allFields.removeClass( "ui-state-error" );
  
  
-      valid = checkRegexp( email, emailRegex, "eg. ui@jquery.com" );
+      valid = checkRegexp( email, emailRegex, "eg. fred.blogs@durham.ac.uk" );
  
       if ( valid ) {
 
-          
-        dialog.dialog( "close" );
+        $.ajax({ url: '/dev/public_html/ajax/adminAdd.php',
+                dataType: "json",
+                data: {action: JSON.stringify(email.val())},
+                type: 'post',
+                success: function(output) {
+                    if (output[0] == true){
+                        dialog.dialog( "close" );
+                        location.reload(true);
+                    } else {
+                        updateTips(output[1]);
+                    }
+                }
+        });
+
       }
       return valid;
     }
  
     dialog = $( "#dialog-create-user" ).dialog({
       autoOpen: false,
-      height: 400,
-      width: 350,
+      height: 220,
+      width: 400,
       modal: true,
+        open: function(){
+            jQuery('.ui-widget-overlay').bind('click',function(){
+                jQuery('#dialog-create-user').dialog('close');
+            })
+        },
       buttons: {
-        "Create an account": addUser,
+        "Add User": addUser,
         Cancel: function() {
           dialog.dialog( "close" );
         }
@@ -219,12 +228,13 @@ END;
     });
  
     $( "#create-user" ).button().on( "click", function() {
+      form[ 0 ].reset();
       dialog.dialog( "open" );
     });
   } );
   </script>
 
-<div id="dialog-create-user" title="Create new user">
+<div id="dialog-create-user" class="dialog" title="Create new user">
   <form>
     <fieldset>
       <label for="email">Durham email: </label>
@@ -234,8 +244,8 @@ END;
       <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
     </fieldset>
   </form>
+  <p class="validateTips"></p>
 </div>
  
-<button id="create-user">Create new user</button>
 
 <?php require_once(TEMPLATES_PATH . "/footer.php");?>

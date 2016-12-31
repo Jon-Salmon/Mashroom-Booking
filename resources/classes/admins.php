@@ -125,6 +125,36 @@ class Admins {
 
     function addAdmin($email){
         global $user_db;
+        global $PDO;
+        $sucess = TRUE;
+        $error = "";
+
+        $stmt = $user_db->prepare('SELECT surname, firstnames, username, email FROM UserDetails WHERE email = ?');
+        $stmt->execute([$email]);
+        $result = $stmt->fetch();
+
+        if(!$result){
+            $sucess = FALSE;
+            $error = "User does not exist on the Durham System";
+            return array($sucess, $error);
+        }
+        
+        $name = ucwords(strtolower(explode(',',$result['firstnames'])[0] . " " . $result['surname']));
+
+        try {
+            $stmt = $PDO->prepare("INSERT INTO admins(user, name, email, admin) VALUES(?, ?, ?, 1)");
+            $result = $stmt->execute([$result['username'], $name, $result['email']]);
+        }
+        catch (PDOException $e) {
+            $sucess = FALSE;
+            $code = $e->getCode();
+            if( $code == "23000") {
+                $error =  "This user already exists";
+            } else {
+                $error = "Oops! Something went wrong and we couldn't send your message.";
+            }
+        }
+        return array($sucess, $error);
     }
 
 }

@@ -27,7 +27,7 @@ class User {
         $this->fullName = ucwords(strtolower(explode(',',$result['firstnames'])[0] . " " . $result['surname']));
 
 
-        $stmt = $PDO->prepare('SELECT CASE WHEN (SELECT count(*) FROM admins where user = ? && (admin = 1 || techManager = 1 || mashManager = 1 || webmaster = 1)) = 0 THEN False ELSE True END AS admin;');
+        $stmt = $PDO->prepare('select case when (select count(*) from admins where user = ? && (admin = 1 || techmanager = 1 || mashmanager = 1 || webmaster = 1)) = 0 then false else true end as admin;');
         $stmt->execute([$userID]);
         $this->admin = $stmt->fetch()['admin'];
 

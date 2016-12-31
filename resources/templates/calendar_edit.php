@@ -1,11 +1,17 @@
 
 <script src='<?php echo HTTP_ROOT ?>js/moment.min.js'></script>
 <script src='<?php echo HTTP_ROOT ?>js/fullcalendar.js'></script>
+<script src="<?php echo HTTP_ROOT ?>js/knockout-2.3.0.js" type="text/javascript"></script>
+<script src="<?php echo HTTP_ROOT ?>js/moment-datepicker.min.js"></script>
+<script type="text/javascript" src="<?php echo HTTP_ROOT ?>js/jquery.timepicker.min.js"></script>
+
 <script>
+
 
 $(document).ready(function() {
 
     // page is now ready, initialize the calendar...
+
 
     $('#calendar').fullCalendar({
         columnFormat: 'ddd D/M',
@@ -23,29 +29,13 @@ $(document).ready(function() {
             },
         eventConstraint: "businessHours",
         selectConstraint: "businessHours",
-        eventRender: function (event, element) {
-        element.attr('href', 'javascript:void(0);');
-        element.click(function() {
-            $("#startTime").html(moment(event.start).format('MMM Do h:mm A'));
-            $("#endTime").html(moment(event.end).format('MMM Do h:mm A'));
-            $("#eventInfo").html(event.description.replace(/\n/g, "<br />"));
-            $("#eventContent").dialog({ 
-                modal: true, 
-                title: event.title,
-                width:350,
-                open: function(){
-                jQuery('.ui-widget-overlay').bind('click',function(){
-                    jQuery('#eventContent   ').dialog('close');
-                    })
-                }
-                });
-        });
-        },
         eventClick: function(calEvent, jsEvent, view) {
-            $('#eventStart').datepicker("setDate", new Date(calEvent.start));
-            $('#eventEnd').datepicker("setDate", new Date(calEvent.end));
+            if (calEvent.editable == 1){
+            $('#eventDate').datepicker("set", calEvent.start);
+            $('#eventStart').timepicker("setTime", new Date(calEvent.start));
+            $('#eventEnd').timepicker("setTime", new Date(calEvent.end));
             $('#calEventDialog #eventTitle').val(calEvent.title);
-            $('#calEventDialog #allday').val([calEvent.className == "gbcs-halfday-event" ? "1" : "2"]).prop('checked', true);
+            $('#calEventDialog #eventDetails').val(calEvent.details);
             $("#calEventDialog").dialog("option", "buttons", [
                 {
                 text: "Save",
@@ -55,7 +45,23 @@ $(document).ready(function() {
             {
                 text: "Delete",
                 click: function() {
-                    $(this).dialog("close");
+                    $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChange.php',
+                            data: {
+                                action: 'delete',
+                                data: JSON.stringify(calEvent.id)
+                            },
+                            type: 'post',
+                            success: function(output) {
+                                        $('#calendar').fullCalendar('refetchEvents');
+                                        if (output == '1'){
+                                            $('#calEventDialog').dialog("close");
+                                        }
+                                        else {
+                                            $('#calEventDialog').dialog("close");
+                                            alert("Oops, something went wrong. Try again later or, if the problem persists, notify the webmaster.");
+                                        }
+                                    }
+                    });
                 }},
             {
                 text: "Cancel",
@@ -63,15 +69,28 @@ $(document).ready(function() {
                     $(this).dialog("close");
                 }}
             ]);
-            $("#calEventDialog").dialog("option", "title", "Edit Event");
+            $("#calEventDialog").dialog("option", "title", "Edit Event: " + calEvent.title);
             $('#calEventDialog').dialog('open');
+
+            } else {
+            $("#eventContent").dialog("option", "title", calEvent.title);
+            $("#startDate").html(moment(calEvent.start).format('Do MMM YYYY'));
+            $("#startTime").html(moment(calEvent.start).format('h:mm A'));
+            $("#endTime").html(moment(calEvent.end).format('h:mm A'));
+            $("#eventInfo").html(calEvent.description.replace(/\n/g, "<br />"));
+            $('#eventContent').dialog('open');
+            }
         },
-        editable: true,
+        editable: false,
         selectable: true,
 		selectHelper: true,
         select: function(start, end) {
-            $('#calEventDialog #eventStart').val(start);
-            $('#calEventDialog #eventEnd').val(end);
+            $('#eventDate').datepicker("set", start);
+            $('#eventStart').timepicker("setTime", new Date(start));
+            $('#eventEnd').timepicker("setTime", new Date(end));
+            $('#calEventDialog #eventTitle').val("");
+            $('#calEventDialog #eventDetails').val("");
+            
             $('#calEventDialog').dialog('open');
 
 				var title = prompt('Event Title:');
@@ -82,8 +101,11 @@ $(document).ready(function() {
 						start: start,
 						end: end
 					};
-                    $.ajax({ url: '/dev/public_html/ajax/eventAdd.php',
-                            data: {action: JSON.stringify(eventData)},
+                    $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChange.php',
+                            data: {
+                                action: 'add',
+                                data: JSON.stringify(eventData)
+                            },
                             type: 'post',
                             success: function(output) {
                                         alert(output);
@@ -96,6 +118,9 @@ $(document).ready(function() {
         eventOverlap: false,
         selectOverlap: false,
         events: '<?php echo HTTP_ROOT ?>ajax/events.php',
+        eventRender: function(event, element) {
+            event.editable = event.editAllowed;
+        }
         // put your options and callbacks here
     });
 
@@ -104,11 +129,47 @@ $(document).ready(function() {
     var start = $('#eventStart');
     var end = $('#eventEnd');
     var eventClass, color;
+    $('#eventDate').datepicker();
+    $('#eventStart').timepicker({
+        'scrollDefault': '09:00',
+        'timeFormat': 'H:i',
+        'className' : 'time-dropdown',
+        'step': 15
+    });
+    $('#eventEnd').timepicker({
+        'scrollDefault': '09:00',
+        'timeFormat': 'H:i',
+        'minTime':'00:00',
+        'showDuration':true,
+        'className' : 'time-dropdown',
+        'step': 15
+    });
+    $('#eventStart').on('changeTime', function() {
+        $('#eventEnd').timepicker('option', 'minTime', $(this).val());
+    });
+
+    $("#eventContent").dialog({ 
+        modal: true, 
+        autoOpen: false,
+        title: "Event details",
+        width:350,
+        open: function(){
+        jQuery('.ui-widget-overlay').bind('click',function(){
+            jQuery('#eventContent   ').dialog('close');
+            })
+        }
+        });
     $('#calEventDialog').dialog({
         resizable: false,
         autoOpen: false,
         title: 'Add Event',
         width: 400,
+        modal: true,
+        open: function(){
+        jQuery('.ui-widget-overlay').bind('click',function(){
+            jQuery('#calEventDialog').dialog('close');
+            })
+        },
         buttons: {
             Save: function() {
                 if (title.val() !== '') {
@@ -137,18 +198,26 @@ $(document).ready(function() {
 <div id="calEventDialog" class="dialog">
     <form>
         <fieldset>
-        <label for="eventTitle">Title</label>
-        <input type="text" name="eventTitle" id="eventTitle" /><br>
-        <label for="eventStart">Start Date</label>
-        <input type="text" name="eventStart" id="eventStart" /><br>
-        <label for="eventEnd">End Date</label>
-        <input type="text" name="eventEnd" id="eventEnd" /><br>
+        <label for="eventTitle">Title: </label>
+        <input type="text" name="eventTitle" class="form-control" id="eventTitle" /><br>
+        <label for="eventDate">Date: </label>
+        <div class="input-group date" id="eventDate" data-datepicker-format="DD-MM-YYYY">
+            <input name="eventDate" class="form-control" type="text" size="16">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+        </div>
+        <label for="eventStart">Start: </label>
+        <input type="text" name="eventStart" class="time form-control" id="eventStart" /><br>
+        <label for="eventEnd">End: </label>
+        <input type="text" name="eventEnd" class="time form-control" id="eventEnd" /><br>
+        <label for="eventDetails">Details: </label>
+        <textarea name="eventDetails" class="form-control" id="eventDetails"></textarea><br>
         </fieldset>
     </form>
 </div>
 
 <div id="eventContent" class="display" title="Event Details" style="display:none;">
     <p id="eventInfo"></p>
+    Date: <span id="startDate"></span><br>
     Start: <span id="startTime"></span><br>
     End: <span id="endTime"></span><br><br>
 </div>

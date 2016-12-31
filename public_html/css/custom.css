@@ -9,3 +9,13 @@
   .dialog {
     display: none;
   }
+
+  #dialog-create-user #email {
+    width: 100%;
+    margin: 10px 0;
+    display: block;
+  }
+
+  .time-dropdown {
+    width:300px;
+  }
