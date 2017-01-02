@@ -121,6 +121,7 @@ $(document).ready(function() {
         },
 		selectHelper: true,
         select: function(start, end) {
+            if (!end.isBefore()){
             $('#eventDate').datepicker("set", start);
             $('#eventStart').timepicker("setTime", new Date(start));
             $('#eventEnd').timepicker("setTime", new Date(end));
@@ -130,10 +131,6 @@ $(document).ready(function() {
             allFields.removeClass( "ui-state-error" );
             tips.text("");
             
-            if (start.isBefore()){
-                alert("event in the past");
-            }
-
             $("#calEventDialog").dialog("option", "buttons", [
                 {
                 text: "Save",
@@ -154,6 +151,7 @@ $(document).ready(function() {
                                                 } else {
                                                     updateTips(output[1]);
                                                 }
+				                                $('#calendar').fullCalendar('unselect');
                                             }
                             });
                         }
@@ -162,13 +160,16 @@ $(document).ready(function() {
                 text: "Cancel",
                 click: function() {
                     $(this).dialog("close");
+                    $('#calendar').fullCalendar('unselect');
                 }}
             ]);
             $(".validateTips").removeClass( "alert-danger" );
             $('#calEventDialog').dialog('open');
 
+			} else {
 				$('#calendar').fullCalendar('unselect');
-			},
+            }
+        },
         eventOverlap: false,
         selectOverlap: false,
         events: '<?php echo HTTP_ROOT ?>ajax/events.php',
