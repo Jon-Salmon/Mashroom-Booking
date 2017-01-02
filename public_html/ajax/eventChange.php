@@ -64,7 +64,7 @@ if(isset($_POST['action']) && !empty($_POST['action'])) {
             echo json_encode([FALSE, $error]);
             exit();
         }
-        
+    
         $error = $event->checkDetails($data->details);
         if ($error != ""){
             echo json_encode([FALSE, $error]);

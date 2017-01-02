@@ -9,13 +9,6 @@ $stmt = $PDO->prepare("SELECT id, title, start, end, description, band, details,
 $stmt->execute([':start' => $start, ':end' => $end, ':user' => $USER->username]);
 $result = $stmt->fetchAll();
             
-#$result = $DB->query("SELECT id, band as title, start, end, details AS description FROM calendar WHERE end > %s && start < %s && deleted = 0 ORDER BY id", $start, $end);
-
-/// List of events
-
- // Query that retrieves events
-
- // sending the encoded result to success page
  echo json_encode($result);
 
 ?>

@@ -1,6 +1,6 @@
 {
     "require": {
-        "twbs/bootstrap": "^3.3",
+        //"twbs/bootstrap": "^3.3",
         "phpmailer/phpmailer": "^5.2",
         "monolog/monolog": "^1.22"
     }

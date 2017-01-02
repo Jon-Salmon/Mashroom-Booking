@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="<?php echo HTTP_ROOT ?>css/jquery.timepicker.css">
     <link href="<?php echo HTTP_ROOT ?>css/datepicker.css" rel="stylesheet" />
-    <link href="<?php echo HTTP_ROOT ?>css/navbar-static-top.css" rel="stylesheet">
     <link rel='stylesheet' href='<?php echo HTTP_ROOT ?>css/fullcalendar.css' />
     <link rel='stylesheet' href='<?php echo HTTP_ROOT ?>css/custom.css' />
 </head>
@@ -37,8 +36,9 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href=<?php echo HTTP_ROOT . "index.php"?>>Home</a></li>
-            <li><a href=<?php echo HTTP_ROOT . "book.php"?>>Book</a></li>
+            <li><a id="newBooking" href="#">New Booking</a></li>
             <li><a href=<?php echo HTTP_ROOT . "bookings.php"?>>My Bookings</a></li>
+            <li><a id="bookInduction" href="#">Request Induction</a></li>
             <?php if($USER->admin) {
                 echo "
             <li class=\"dropdown\">
@@ -46,61 +46,31 @@
               <ul class=\"dropdown-menu\">
                 <li><a href=\"" . HTTP_ROOT . "admin/manageBookings.php\">All Bookings</a></li>
                 <li><a href=\"" . HTTP_ROOT . "admin/index.php\">Admin Users</a></li>
+                <li><a href=\"" . HTTP_ROOT . "admin/inductions.php\">Induction Requests</a></li>
               </ul>
             </li>
             ";} ?>
-            <li><a id="bookInduction" href="#">Request Induction</a></li>
+            <li><a id="support" href="#">Support</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
 
 
-    <script>
-    $( function() {
-      $( "#induct-confirm" ).dialog({
-        resizable: false,
-        height: "auto",
-        width: 400,
-        modal: true,
-        autoOpen: false,
-        open: function(){
-          jQuery('.ui-widget-overlay').bind('click',function(){
-              jQuery('#induct-confirm').dialog('close');
-          })
-        },
-        buttons: {
-          "Register": function() {
-              $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/induct.php',
-                      data: {induct: JSON.stringify('true')},
-                      type: 'post',
-                      success: function(output) {
-                                  var textSpan = document.getElementById("induct-text");
-                                  textSpan.innerHTML = output;
-                                  $('#induct-confirm').dialog("option", "buttons", {
-                                    Close: function() {
-                                      $( this ).dialog( "close" );
-                                    }
-                                  });
-                      }
-              });
-          },
-          Close: function() {
-            $( this ).dialog( "close" );
-          }
-        }
-      });
-    });
-
-    $("#bookInduction").click(function(e) {
-        e.preventDefault();
-        $( "#induct-confirm" ).dialog( "open" );
-    });
-    </script>
 
     <div id="induct-confirm" class="dialog" title="Request a MASH room induction">
       <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span><span id="induct-text">Use of the MASH room requires you to have been inducted. Please register your interest with the MASH room manager below.</span></p>
     </div>
 
+    <div id="support-dialog" class="dialog" title="Support">
+      <span id="induct-text">
+      <p>
+      For all queries relating to the MASH room, please contact <a href=mailto:<?php echo $ADMINS->mash->email; ?> ><?php echo $ADMINS->mash->name; ?> <span class="glyphicon glyphicon-envelope"></span></a>.<br/><br/>
+      For all general tech queries, please contact <a href=mailto:<?php echo $ADMINS->tech->email; ?> ><?php echo $ADMINS->tech->name; ?> <span class="glyphicon glyphicon-envelope"></span></a>.<br/><br/>
+      For all any issue or bug with this site, please contact <a href=mailto:<?php echo $ADMINS->web->email; ?> ><?php echo $ADMINS->web->name; ?> <span class="glyphicon glyphicon-envelope"></span></a>.<br/><br/>
+
+      </p>
+      </span>
+    </div>
 
     <div class="container">

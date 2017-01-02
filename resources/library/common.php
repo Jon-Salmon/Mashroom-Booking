@@ -33,7 +33,7 @@ function email($from, $fromName, $to, $subject, $message) {
     $mail->Subject    = $subject;
 
     //Main message
-    $mail->MsgHTML($message);
+    $mail->Body = $message;
 
     //Your email, here you will receive the messages from this form. 
     //This must be different from the one you use to send emails, 
@@ -42,6 +42,9 @@ function email($from, $fromName, $to, $subject, $message) {
     if(!$mail->Send()) 
     {
         //couldn't send
+    var_dump($mail);
+        global $log;
+        $log->error($mail->ErrorInfo);
         return FALSE;
     } 
     else 

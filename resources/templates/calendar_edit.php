@@ -3,6 +3,7 @@
 <script src='<?php echo HTTP_ROOT ?>js/fullcalendar.js'></script>
 <script src="<?php echo HTTP_ROOT ?>js/knockout-2.3.0.js" type="text/javascript"></script>
 <script src="<?php echo HTTP_ROOT ?>js/moment-datepicker.min.js"></script>
+<script src="js/jquery.timepicker.min.js"></script>
 <script type="text/javascript" src="<?php echo HTTP_ROOT ?>js/jquery.timepicker.min.js"></script>
 
 <script>
@@ -23,12 +24,22 @@ $(document).ready(function() {
         allDaySlot: false,
         businessHours:
             {
-                    start: '8:00',
-                    end:   '22:00',
+                    start: '08:00',
+                    end:   '22:30',
                     dow: [ 0, 1, 2, 3, 4, 5, 6]
             },
-        eventConstraint: "businessHours",
-        selectConstraint: "businessHours",
+        eventConstraint:
+            {
+                start: '00:00',    
+                end: '24:00',
+                dow: [ 0, 1, 2, 3, 4, 5, 6]
+            },
+        selectConstraint:
+            {
+                start: '00:00',    
+                end: '24:00',
+                dow: [ 0, 1, 2, 3, 4, 5, 6]
+            },
         eventClick: function(calEvent, jsEvent, view) {
             if (calEvent.editable == 1 && !calEvent.end.isBefore()){
             $('#eventDate').datepicker("set", calEvent.start);
@@ -91,6 +102,7 @@ $(document).ready(function() {
                 }}
             ]);
             $("#calEventDialog").dialog("option", "title", "Edit Event: " + calEvent.title);
+            $(".validateTips").removeClass( "alert-danger" );
             $('#calEventDialog').dialog('open');
 
             } else {
@@ -103,7 +115,10 @@ $(document).ready(function() {
             }
         },
         editable: false,
-        selectable: true,
+        selectable: {
+            month: false,
+            agenda: true
+        },
 		selectHelper: true,
         select: function(start, end) {
             $('#eventDate').datepicker("set", start);
@@ -149,6 +164,7 @@ $(document).ready(function() {
                     $(this).dialog("close");
                 }}
             ]);
+            $(".validateTips").removeClass( "alert-danger" );
             $('#calEventDialog').dialog('open');
 
 				$('#calendar').fullCalendar('unselect');
@@ -158,7 +174,70 @@ $(document).ready(function() {
         events: '<?php echo HTTP_ROOT ?>ajax/events.php',
         eventRender: function(event, element) {
             event.editable = event.editAllowed;
-        }
+        },
+        eventResize: function(event, delta, revertFunc) {
+            var data = {
+                'start': event.start.format() + ".000Z",
+                'end': event.end.format() + ".000Z",
+                'id': event.id,
+                'title': event.band,
+                'details': event.details
+            };
+            $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChange.php',
+                    dataType: "json",
+                    data: {
+                        action: 'change',
+                        data: JSON.stringify(data)
+                    },
+                    type: 'post',
+                    success: function(output) {
+                                if (output[0]){
+                                    $('#calendar').fullCalendar('refetchEvents');
+                                } else {
+                                    $("#message").html(output[1]);
+                                    $('#errorDisplay').dialog('open');
+                                    revertFunc();
+                                }
+                            }
+            });
+        },
+        eventDrop: function(event, delta, revertFunc) {
+            var data = {
+                'start': event.start.format() + ".000Z",
+                'end': event.end.format() + ".000Z",
+                'id': event.id,
+                'title': event.band,
+                'details': event.details
+            };
+            $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChange.php',
+                    dataType: "json",
+                    data: {
+                        action: 'change',
+                        data: JSON.stringify(data)
+                    },
+                    type: 'post',
+                    success: function(output) {
+                                if (output[0]){
+                                    $('#calendar').fullCalendar('refetchEvents');
+                                } else {
+                                    $("#message").html(output[1]);
+                                    $('#errorDisplay').dialog('open');
+                                    revertFunc();
+                                }
+                            }
+            });
+        },
+        dayClick: function(date, jsEvent, view) {
+            if (view.name = 'month'){
+                $('#calendar') 
+                    .fullCalendar('changeView', 'agendaWeek'/* or 'basicDay' */);
+                $('#calendar') 
+                    .fullCalendar('gotoDate', date); 
+                setTimeout(function() {
+                    $('#calEventDialog').dialog('close');
+                }, 1);
+            }
+        }   
         // put your options and callbacks here
     });
 
@@ -180,10 +259,16 @@ $(document).ready(function() {
         'minTime':'00:00',
         'showDuration':true,
         'className' : 'time-dropdown',
-        'step': 15
+        'step': 15,
+        'maxTime': '24:00'
     });
     $('#eventStart').on('changeTime', function() {
         $('#eventEnd').timepicker('option', 'minTime', $(this).val());
+        var start = $('#eventStart').timepicker('getTime');
+        var end = $('#eventEnd').timepicker('getTime');
+        if (start >= end){
+            $('#eventEnd').timepicker('setTime', new Date(start.getTime() + 15*60000));
+        }
     });
 
     $("#eventContent").dialog({ 
@@ -192,14 +277,34 @@ $(document).ready(function() {
         title: "Event details",
         width:350,
         open: function(){
-        jQuery('.ui-widget-overlay').bind('click',function(){
-            jQuery('#eventContent   ').dialog('close');
+            $(".validateTips").removeClass( "alert-danger" );
+            jQuery('.ui-widget-overlay').bind('click',function(){
+                jQuery('#eventContent   ').dialog('close');
             })
         }
         });
+    $("#errorDisplay").dialog({ 
+        modal: true, 
+        autoOpen: false,
+        title: "Error",
+        open: function(){
+        jQuery('.ui-widget-overlay').bind('click',function(){
+            jQuery('#errorDisplay').dialog('close');
+            })
+        }
+        });
+        
     $('#calEventDialog').dialog({
         resizable: false,
-        autoOpen: false,
+        <?php
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            if ($_POST['newBooking'] == "1") {
+                echo "autoOpen: true,";
+            }
+        } else {
+            echo "autoOpen: false,";
+        }
+        ?>
         title: 'Add Event',
         width: 400,
         modal: true,
@@ -210,16 +315,25 @@ $(document).ready(function() {
         },
         buttons: {
             Save: function() {
-                if (title.val() !== '') {
-                    $myCalendar.fullCalendar('renderEvent', {
-                        title: title.val(),
-                        start: start.val(),
-                        end: end.val(),
-                    }, true // make the event "stick"
-                    );
-                }
-                $myCalendar.fullCalendar('unselect');
-                $(this).dialog('close');
+                    var resultArray = updateEvent(0);
+                    if (resultArray[0]){
+                            $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChange.php',
+                                    dataType: "json",
+                                    data: {
+                                        action: 'add',
+                                        data: JSON.stringify(resultArray[1])
+                                    },
+                                    type: 'post',
+                                    success: function(output) {
+                                                if (output[0]){
+                                                    $('#calendar').fullCalendar('refetchEvents');
+                                                    $('#calEventDialog').dialog("close");
+                                                } else {
+                                                    updateTips(output[1]);
+                                                }
+                                            }
+                            });
+                        }
             },
             Cancel: function() {
                 $(this).dialog('close');
@@ -242,10 +356,7 @@ $(document).ready(function() {
     function updateTips( t ) {
       tips
         .text( t )
-        .addClass( "ui-state-error" );
-      setTimeout(function() {
-        tips.removeClass( "ui-state-error", 1500 );
-      }, 500 );
+        .addClass( "alert alert-danger" );
     }
  
     function checkLength( o, n, min, max ) {
@@ -283,14 +394,16 @@ $(document).ready(function() {
         data.start = eventStart.timepicker('getTime', data.date);
         data.end = eventEnd.timepicker('getTime', data.date);
 
-
-        valid = valid && checkSet(eventStart, data.start);
-        valid = valid && checkSet(eventEnd, data.end);
-        
         if (data.start > data.end){
-            updateTips("Cannot start and end times must be same day.");
+            if (data.end.getHours() == 0 && data.end.getMinutes() == 0){
+                var tempDate = new Date(data.end);
+                data.end.setDate(tempDate.getDate() + 1);
+            }
+            else {
+            updateTips("End time cannot be after start time.");
             eventEnd.addClass("ui-state-error");
             valid = false;
+            }
         }
 
         valid = valid && checkLength(data.details, "title", 0, 255);
@@ -304,23 +417,36 @@ $(document).ready(function() {
 <div id="calEventDialog" class="dialog">
     <form>
         <fieldset>
-        <label for="eventTitle">Title: </label>
-        <input type="text" name="eventTitle" class="form-control" id="eventTitle" /><br>
-        <label for="eventDate">Date: </label>
+        <div class="table-style">
+        <div class="dialog-element">
+        <label for="eventTitle" class="one-line-input">Title: </label>
+        <span class="input-box"><input type="text" name="eventTitle" class="form-control" id="eventTitle" /></span>
+        </div>
+        <div class="dialog-element">
+        <label for="eventDate" class="one-line-input">Date: </label>
         <div class="input-group date" id="eventDate" data-datepicker-format="DD-MM-YYYY">
             <input name="eventDate" class="form-control" type="text" size="16" readonly>
             <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
         </div>
-        <label for="eventStart">Start: </label>
-        <input type="text" name="eventStart" class="time form-control" id="eventStart" /><br>
-        <label for="eventEnd">End: </label>
-        <input type="text" name="eventEnd" class="time form-control" id="eventEnd" /><br>
+        </div>
+        <div class="dialog-element">
+        <label for="eventStart" class="one-line-input">Start: </label>
+        <span class="input-box"><input type="text" name="eventStart" class="time form-control" id="eventStart" /></span>
+        </div>
+        <div class="dialog-element">
+        <label for="eventEnd" class="one-line-input">End: </label>
+        <span class="input-box" id="end"><input type="text" name="eventEnd" class="time form-control" id="eventEnd" /></span>
+        </div>
+        </div>
+        <div id="detail-div">
         <label for="eventDetails">Details: </label>
-        <textarea name="eventDetails" class="form-control" id="eventDetails"></textarea><br>
+        <textarea name="eventDetails" class="form-control" id="eventDetails"></textarea>
+        <div>
         </fieldset>
     </form>
-  <p class="validateTips"></p>
+  <p class="alert validateTips"></p>
 </div>
+
 
 <div id="eventContent" class="display" title="Event Details" style="display:none;">
     <p id="eventInfo"></p>
@@ -328,4 +454,9 @@ $(document).ready(function() {
     Start: <span id="startTime"></span><br>
     End: <span id="endTime"></span><br><br>
 </div>
+
+<div id="errorDisplay" class="display" title="Error" style="display:none;">
+    <span id="message"></span><br><br>
+</div>
+
 <div id='calendar'></div>

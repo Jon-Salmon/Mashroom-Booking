@@ -36,7 +36,7 @@
         
         ?>
         
-        <button id="create-user">Create new user</button>
+        <button id="create-user" class="btn">Create new user</button>
         
         <table class="table table-hover">
             <thead>
@@ -44,6 +44,7 @@
                 <th>Position</th>
                 <th>Name</th>
                 <th>Change</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -63,7 +64,7 @@
                     <form method=\"post\" action=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . "\">  
                     <input type=\"hidden\" name=\"pos\" value=\"" . $row .  "\">
                     <input type=\"hidden\" name=\"action\" value=\"change\">
-                    <select name=\"id\">
+                    <select name=\"id\" class=\"form-control\">
                         <option value=\"default\">Update to...</option>";
                     foreach ($admins as $item){
                         if ($item['id'] != $id){
@@ -71,7 +72,9 @@
                         }
                     }
                     echo "</select>
-                    <input type=\"submit\" name=\"submit\" value=\"Change\">  
+                    </td>
+                    <td>
+                    <input type=\"submit\" class=\"btn\" name=\"submit\" value=\"Change\">  
                     </form>
                     </td>";
                     
@@ -106,7 +109,7 @@
                     <form method=\"post\" iid=\"delete\" action=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . "\">  
                     <input type=\"hidden\" name=\"id\" value=\"" . $id .  "\">
                     <input type=\"hidden\" name=\"action\" value=\"delete\">
-                    <input type=\"submit\" name=\"submit\" value=\"Delete\">  
+                    <input type=\"submit\" class=\"btn\" name=\"submit\" value=\"Delete\">  
                     </form>
                     </td>";
                     
@@ -157,10 +160,7 @@ END;
     function updateTips( t ) {
       tips
         .text( t )
-        .addClass( "ui-state-error" );
-      setTimeout(function() {
-        tips.removeClass( "ui-state-error", 1500 );
-      }, 500 );
+        .addClass( "alert alert-danger" );
     }
  
     function checkRegexp( o, regexp, n ) {
@@ -175,7 +175,7 @@ END;
  
     function addUser() {
       var valid = true;
-      allFields.removeClass( "ui-state-error" );
+      allFields.removeClass( "alert alert-danger ui-state-error" );
  
  
       valid = checkRegexp( email, emailRegex, "eg. fred.blogs@durham.ac.uk" );
@@ -218,7 +218,7 @@ END;
       },
       close: function() {
         form[ 0 ].reset();
-        allFields.removeClass( "ui-state-error" );
+        allFields.removeClass( "alert alert-danger" );
       }
     });
  
@@ -238,13 +238,13 @@ END;
   <form>
     <fieldset>
       <label for="email">Durham email: </label>
-      <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all">
+      <input type="text" name="email" class="form-control" id="email" value="" class="text ui-widget-content ui-corner-all">
  
       <!-- Allow form submission with keyboard without duplicating the dialog button -->
       <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
     </fieldset>
   </form>
-  <p class="validateTips"></p>
+  <p class="alert validateTips"></p>
 </div>
  
 

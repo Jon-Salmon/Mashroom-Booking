@@ -11,7 +11,6 @@
     require_once(TEMPLATES_PATH . "/header.php");
 ?>
 
-<div id="container">
     <div id="content">
         <!-- content -->
 
@@ -20,7 +19,7 @@
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (!empty($_POST['id'])) {
-                $events->deleteEvent($_POST['id'], FALSE);
+                $events->deleteEvent($_POST['id'], FALSE, TRUE);
             }
         }
 
@@ -58,12 +57,17 @@
                     echo '<td>' . $end->format("H:i") . '</td>';
                     echo '<td>' . $details . '</td>';
 
-                    echo "
+                    /*echo "
                     <td>
                     <form method=\"post\" action=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . "\">  
                     <input type=\"hidden\" name=\"id\" value=\"" . $id .  "\">
-                    <input type=\"submit\" name=\"submit\" value=\"Delete\">  
+                    <input type=\"submit\" name=\"submit\" class=\"btn\" value=\"Delete\">  
                     </form>
+                    </td>";*/
+
+                    echo "
+                    <td>
+                    <button class=\"btn\" onclick=\"confirmDelete(". $id . ")\">Delete</button>
                     </td>";
                     
                     echo "</tr>";
@@ -73,5 +77,57 @@
         </table>
 
     </div>
+
+<script>
+
+ function confirmDelete(id) {
+     $("#delete-confirm")
+        .data('id', id)  // The important part .data() method
+        .dialog('open');
+  }
+
+  
+    $( function() {
+      $( "#delete-confirm" ).dialog({
+        resizable: false,
+        height: "auto",
+        width: 400,
+        modal: true,
+        autoOpen: false,
+        open: function(){
+          jQuery('.ui-widget-overlay').bind('click',function(){
+              jQuery('#induct-confirm').dialog('close');
+          })
+        },
+        buttons: {
+          "Delete": function() {
+              var id = $(this).data('id'); // Get the stored result
+                $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChangeAdmin.php',
+                        dataType: "json",
+                        data: {
+                            action: 'delete',
+                            data: JSON.stringify(id)
+                        },
+                        type: 'post',
+                        success: function(output) {
+                            location.reload();
+                        }
+                });
+            $( this ).dialog( "close" );
+          },
+          Cancel: function() {
+            $( this ).dialog( "close" );
+          }
+        }
+      });
+
+    });
+</script>
+
+
+<div id="delete-confirm" class="dialog" title="Delete event as admin">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span><span id="induct-text">Note: Deleting this event will notify the event's creator of the cancellation by email.</span></p>
 </div>
+
+
 <?php require_once(TEMPLATES_PATH . "/footer.php");?>

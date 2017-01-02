@@ -15,12 +15,9 @@ class Event {
     
 
     function __construct($db){
-        #require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
-        #require_once(LIBRARY_PATH . "/google/vendor/autoload.php");
         $this->PDO = $db;
     }
     
-    # Functions to validate and set inputs for event creatition
 
     private function _validateTime($time)
     {
@@ -44,7 +41,8 @@ class Event {
         if ($time == FALSE){
             $endErr = 'No valid end time specified.';
         } else {
-            if ($this->start->format('d/m/Y') == $time->format('d/m/Y')){
+            $timeSub1 = clone $time;
+            if (($this->start->format('d/m/Y') == $time->format('d/m/Y')) || ($this->start->format('d/m/Y') == $timeSub1->modify("-1 second")->format('d/m/Y'))){
                 if ($time < $this->start) {
                     $endErr = 'End time cannot be before start time';
                 } elseif ($time < new DateTime()) {
@@ -85,17 +83,6 @@ class Event {
         $stmt->execute(array(':start' => $this->start->format('Y-m-d H:i:s'), ':end' => $this->end->format('Y-m-d H:i:s'), ':owner' => $_ENV["REMOTE_USER"], ':name' => $USER->fullName, ':details' => $this->details, ':band' => $this->band, ':title' => $this->title, ':description' => $this->description));
         $result = $stmt->rowCount();
 
-        #$result = $this->DB->insert('calendar', array(
-        #    'start' => $this->start,
-        #    'end' => $this->end,
-        #    'owner' => $_ENV["REMOTE_USER"],
-        #    'details' => $this->details,
-        #    'band' => $this->band,
-        #    'created' => new DateTime(),
-        #    'title' => $this->title,
-        #    'description' => $this->description
-        #));
-        
         if ($result == 1) {return TRUE;}
         else {
             global $log;
@@ -123,7 +110,6 @@ class Event {
             $stmt->execute([$this->end->format('Y-m-d H:i:s'), $this->start->format('Y-m-d H:i:s')]);
             $slotTaken = !empty($stmt->fetch());
 
-            #$slotTaken = !empty($this->DB->query("SELECT * FROM calendar WHERE start < %t && end > %t && deleted = 0;", $this->end, $this->start));
             if ($slotTaken) {
                 return array(FALSE, "Slot unavalible");
             }
@@ -173,7 +159,6 @@ class Event {
                 $stmt->execute([$this->end->format('Y-m-d H:i:s'), $this->start->format('Y-m-d H:i:s'), $id]);
                 $slotTaken = !empty($stmt->fetch());
 
-                #$slotTaken = !empty($this->DB->query("SELECT * FROM calendar WHERE start < %t && end > %t && deleted = 0;", $this->end, $this->start));
                 if ($slotTaken) {
                     global $log;
                     return array(FALSE, "Slot unavalible");
@@ -196,12 +181,11 @@ class Event {
         $stmt = $this->PDO->prepare("UPDATE calendar SET deleted=1 WHERE id = ?");
         $result = $stmt->execute([$id]);
 
-        #$result = $this->DB->query("UPDATE calendar SET deleted=1 WHERE id = %s", $id);
         return $result;
     }
 
 
-    public function deleteEvent($id, $checkUser) {
+    public function deleteEvent($id, $checkUser, $sendEmail = FALSE) {
         if ($checkUser) {
             global $USER;
 
@@ -220,6 +204,25 @@ class Event {
             $log->error($db);
             return False;
         }
+        if ($sendEmail){
+            global $USER;
+            global $ADMINS;
+            
+            $stmt = $this->PDO->prepare("SELECT owner, start FROM calendar where id = :id");
+            $stmt->execute([':id' => $id]);
+            $result = $stmt->fetch();
+            $username = $result['owner'];
+            $start = new DateTime($result['start']);
+            $owner = new User($username);
+
+            if (count($USER->role) == 1){
+                $name = "Admin";
+            } else {
+                $name = $ADMINS->{$USER->role[0]}->title;
+            }
+            
+            email($USER->email, $name, $owner->email, "MASH room booking cancellation", "Dear " . $owner->fullName . ",\n\nUnfortuanatly your MASH room booking for " . $start->format("d/m/Y") . " at " . $start->format("H:i") . " has had to be canceled by the " . $name . ". You can respsond to this email with any further inquires.");
+        }
         return TRUE;
     }
 
@@ -232,12 +235,10 @@ class Event {
             $stmt->execute([$USER->username]);
             $events = $stmt->fetchAll();
             
-            #$events = $this->DB->query("SELECT start, end, band, details, id FROM calendar WHERE end >= NOW() and owner = %s and deleted = FALSE ORDER BY start", $USER->username);
         }
         else {
             $stmt = $this->PDO->query("SELECT start, end, band, details, id, name FROM calendar WHERE end >= NOW() and deleted = FALSE ORDER BY start");
             $events = $stmt->fetchAll();
-            #$events = $this->DB->query("SELECT start, end, band, details, id FROM calendar WHERE end >= NOW() and deleted = FALSE ORDER BY start");
         }
         return $events;
     }

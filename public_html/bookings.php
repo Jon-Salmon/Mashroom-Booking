@@ -53,7 +53,7 @@
                     <td>
                     <form method=\"post\" action=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . "\">  
                     <input type=\"hidden\" name=\"id\" value=\"" . $id .  "\">
-                    <input type=\"submit\" name=\"submit\" value=\"Delete\">  
+                    <input type=\"submit\" class=\"btn\" name=\"submit\" value=\"Delete\">  
                     </form>
                     </td>";
                     

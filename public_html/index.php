@@ -6,11 +6,7 @@
 ?>
 <div id="container">
         
-        <script src="js/jquery.timepicker.min.js"></script>
-
         <?php include(TEMPLATES_PATH . "/calendar_edit.php");?>
-
-        <?php #email("trevs.mashroom@gmail.com", "The Mash Room", "jonathan.salmon@hotmail.co.uk", "Composer test", "thas this worked?"); ?>
 
 </div>
 

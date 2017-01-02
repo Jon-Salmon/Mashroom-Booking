@@ -7,12 +7,10 @@ class User {
     public $username;
     public $email;
     public $admin;
+    public $role = [];
 
     function __construct($userID){
         global $config, $PDO, $user_db;
-
-        #$user_db = new MeekroDB($config["db"]["users"]["host"], $config["db"]["users"]["username"], $config["db"]["users"]["password"], $config["db"]["users"]["dbname"]);
-        #$result = $user_db->query("SELECT surname, firstnames, title, college, email FROM UserDetails WHERE username = %s", $userID);
 
         $stmt = $user_db->prepare('SELECT surname, firstnames, title, college, email FROM UserDetails WHERE username = ?');
         $stmt->execute([$userID]);
@@ -26,12 +24,25 @@ class User {
         $this->username = $userID;
         $this->fullName = ucwords(strtolower(explode(',',$result['firstnames'])[0] . " " . $result['surname']));
 
-
-        $stmt = $PDO->prepare('select case when (select count(*) from admins where user = ? && (admin = 1 || techmanager = 1 || mashmanager = 1 || webmaster = 1)) = 0 then false else true end as admin;');
+        $stmt = $PDO->prepare('select admin, techmanager, mashmanager, webmaster from admins where user = ? && (admin = 1 || techmanager = 1 || mashmanager = 1 || webmaster = 1);');
         $stmt->execute([$userID]);
-        $this->admin = $stmt->fetch()['admin'];
-
-        #$this->admin = $DB->queryOneField("admin","SELECT CASE WHEN (SELECT count(*) FROM admins where user = %s && (admin = 1 || techManager = 1 || mashManager = 1 || webmaster = 1)) = 0 THEN False ELSE True END AS admin;", $userID);
+        if ($stmt->rowCount() > 0){
+            $this->admin = TRUE;
+            $result = $stmt->fetch();
+            if ($result['mashmanager'] == '1'){
+                $this->role[] = 'mash';
+            }
+            if ($result['techmanager'] == '1'){
+                $this->role[] = 'tech';
+            }
+            if ($result['webmaster'] == '1'){
+                $this->role[] = 'web';
+            }
+            $this->role[] = 'admin';
+        } else {
+            $this->admin = FALSE;
+        }
+        
     }
 }
 ?>

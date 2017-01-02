@@ -43,23 +43,10 @@ $config = array(
         "port" => 465,
         "username" => "trevs.mashroom@gmail.com",
         "password" => "thecakeisalie"
-    ),
-    #"keyFile" => LIBRARY_PATH . '/../service-account-credentials.json',
-    #"calendarID" => 'trevs.mashroom@gmail.com',
-    "urls" => array(
-        "baseUrl" => "http://example.com"
-    ),
-    "paths" => array(
-        "resources" => "/path/to/resources",
-        "images" => array(
-            "content" => $_SERVER["DOCUMENT_ROOT"] . "/images/content",
-            "layout" => $_SERVER["DOCUMENT_ROOT"] . "/images/layout"
-        )
     )
 );
  
  
-#require_once(LIBRARY_PATH . "/meekrodb.2.3.class.php");
 require_once(LIBRARY_PATH . "/vendor/autoload.php");
 
 use Monolog\Logger;
@@ -70,8 +57,6 @@ ob_start();
 $log = new Logger('Mash');
 $log->pushHandler(new StreamHandler(dirname(__FILE__) . '/errors.log', Logger::WARNING));
 
-
-#$DB = new MeekroDB($config["db"]["db1"]["host"], $config["db"]["db1"]["username"], $config["db"]["db1"]["password"], $config["db"]["db1"]["dbname"]);
 
 $host = $config["db"]["db1"]["host"];
 $db = $config["db"]["db1"]["dbname"];
@@ -110,8 +95,9 @@ require_once(LIBRARY_PATH . "/common.php");
 require_once(CLASSES_PATH . "/user.php");
 require_once(CLASSES_PATH . "/admins.php");
 
-$USER = new User($_ENV["REMOTE_USER"]);
 $ADMINS = new Admins();
+$USER = new User($_ENV["REMOTE_USER"]);
+
 
 date_default_timezone_set('Europe/London');
 
