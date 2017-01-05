@@ -411,7 +411,58 @@ $(document).ready(function() {
  
       return [valid, data];
     }
+    
+    $("#newBooking").click(function(e) {
+        e.preventDefault();
+        
+        if ($('#navbar').hasClass("in") == true){
+            $('.navbar-toggle').click();
+        }
+        
+        $('#eventStart').val("");
+        $('#eventEnd').val("");
+        $('#calEventDialog #eventTitle').val("");
+        $('#calEventDialog #eventDetails').val("");
+        allFields.removeClass( "ui-state-error" );
+        tips.text("");
+        
+        $("#calEventDialog").dialog("option", "buttons", [
+            {
+            text: "Save",
+            click: function() {
+                var resultArray = updateEvent(0);
+                if (resultArray[0]){
+                        $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChange.php',
+                                dataType: "json",
+                                data: {
+                                    action: 'add',
+                                    data: JSON.stringify(resultArray[1])
+                                },
+                                type: 'post',
+                                success: function(output) {
+                                            if (output[0]){
+                                                $('#calendar').fullCalendar('refetchEvents');
+                                                $('#calEventDialog').dialog("close");
+                                            } else {
+                                                updateTips(output[1]);
+                                            }
+                                            $('#calendar').fullCalendar('unselect');
+                                        }
+                        });
+                    }
+            }},
+        {
+            text: "Cancel",
+            click: function() {
+                $(this).dialog("close");
+                $('#calendar').fullCalendar('unselect');
+            }}
+        ]);
+        $(".validateTips").removeClass( "alert-danger" );
+        $('#calEventDialog').dialog('open');
+    });
   });
+
 
 </script>
 

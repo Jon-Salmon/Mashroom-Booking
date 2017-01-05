@@ -64,14 +64,10 @@
         $( "#support-dialog" ).dialog( "open" );
     });
     
+    
     $("#newBooking").click(function(e) {
         e.preventDefault();
-        if (window.location.pathname == '<?php echo HTTP_ROOT . "index.php"?>'){
-            if ($('#navbar').hasClass("in") == true){
-              $('.navbar-toggle').click();
-            }
-            $('#calEventDialog').dialog('open');
-        } else {
+        if (!(window.location.pathname == '<?php echo HTTP_ROOT . "index.php"?>')){
             var form = $('<form></form>');
 
             form.attr("method", "post");
@@ -89,7 +85,6 @@
             form.submit();
         }
     });
-    
           
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
