@@ -238,7 +238,11 @@ $(document).ready(function() {
                     $('#calEventDialog').dialog('close');
                 }, 1);
             }
-        }   
+        },
+        height: function(){
+            return $( window ).height() - 90;
+        },
+        scrollTime: '08:00:00'
         // put your options and callbacks here
     });
 
@@ -247,6 +251,7 @@ $(document).ready(function() {
     var start = $('#eventStart');
     var end = $('#eventEnd');
     var eventClass, color;
+
     $('#eventDate').datepicker();
     $('#eventStart').timepicker({
         'scrollDefault': '09:00',

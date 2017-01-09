@@ -19,6 +19,8 @@
     <link href="<?php echo HTTP_ROOT ?>css/datepicker.css" rel="stylesheet" />
     <link rel='stylesheet' href='<?php echo HTTP_ROOT ?>css/fullcalendar.css' />
     <link rel='stylesheet' href='<?php echo HTTP_ROOT ?>css/custom.css' />
+
+
 </head>
  
 <body>
