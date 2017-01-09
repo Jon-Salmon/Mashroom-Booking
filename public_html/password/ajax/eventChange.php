@@ -1,6 +1,6 @@
 <?php
 
-require_once("../../resources/config.php");
+require_once("../../../resources/config.php");
 require_once(CLASSES_PATH . "/events.php");
 
 
@@ -12,30 +12,30 @@ if(isset($_POST['action']) && !empty($_POST['action'])) {
         
         $error = $event->checkStart($data->start);
         if ($error != ""){
-            echo json_encode([FALSE, $error]);
+            echo json_encode(array(FALSE, $error));
             exit();
         }
         
         $error = $event->checkEnd($data->end);
         if ($error != ""){
-            echo json_encode([FALSE, $error]);
+            echo json_encode(array(FALSE, $error));
             exit();
         }
         
         $error = $event->checkBand($data->title);
         if ($error != ""){
-            echo json_encode([FALSE, $error]);
+            echo json_encode(array(FALSE, $error));
             exit();
         }
         
         $error = $event->checkDetails($data->details);
         if ($error != ""){
-            echo json_encode([FALSE, $error]);
+            echo json_encode(array(FALSE, $error));
             exit();
         }
 
-        echo json_encode($event->createEvent());
-        exit();
+        exit(json_encode($event->createEvent()));
+
         
     } elseif ($_POST['action'] == 'delete'){
         $id = json_decode($_POST['data']);
@@ -49,25 +49,25 @@ if(isset($_POST['action']) && !empty($_POST['action'])) {
         
         $error = $event->checkStart($data->start);
         if ($error != ""){
-            echo json_encode([FALSE, $error]);
+            echo json_encode(array(FALSE, $error));
             exit();
         }
         
         $error = $event->checkEnd($data->end);
         if ($error != ""){
-            echo json_encode([FALSE, $error]);
+            echo json_encode(array(FALSE, $error));
             exit();
         }
         
         $error = $event->checkBand($data->title);
         if ($error != ""){
-            echo json_encode([FALSE, $error]);
+            echo json_encode(array(FALSE, $error));
             exit();
         }
     
         $error = $event->checkDetails($data->details);
         if ($error != ""){
-            echo json_encode([FALSE, $error]);
+            echo json_encode(array(FALSE, $error));
             exit();
         }
 

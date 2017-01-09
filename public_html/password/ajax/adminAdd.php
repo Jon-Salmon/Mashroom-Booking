@@ -1,6 +1,6 @@
 <?php
 
-require_once("../../resources/config.php");
+require_once("../../../resources/config.php");
 require_once(CLASSES_PATH . "/admins.php");
 
 if (!$USER->admin){
@@ -19,6 +19,6 @@ if(isset($_POST['action']) && !empty($_POST['action'])) {
 
     }
     else {
-        echo json_encode([FALSE, "No data provided."]);
+        echo json_encode(array(FALSE, "No data provided."));
     }
 ?>

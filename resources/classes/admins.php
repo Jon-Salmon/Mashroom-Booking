@@ -63,7 +63,7 @@ class Admins {
         global $PDO;
         global $USER;
         $stmt = $PDO->prepare('SELECT name, email, techManager, mashManager, webmaster, admin FROM admins WHERE id = ?;');
-        $stmt->execute([$id]);
+        $stmt->execute(array($id));
         return $stmt->fetch();
     }
 
@@ -78,7 +78,7 @@ class Admins {
         }
         else {
             $stmt = $PDO->prepare('DELETE FROM admins WHERE id = ?');
-            $sucess = $stmt->execute([$id]);
+            $sucess = $stmt->execute(array($id));
         }
         return array($sucess, $error);
     }
@@ -112,11 +112,11 @@ class Admins {
         else {
             $sql = "UPDATE `admins` SET `" . $sqlPos . "` = 0 WHERE `id` = :id";
             $stmt = $PDO->prepare($sql);
-            $sucess = $stmt->execute(['id' => $this->{$pos}->id]);
+            $sucess = $stmt->execute(array('id' => $this->{$pos}->id));
             
             $sql = "UPDATE `admins` SET `" . $sqlPos . "` = 1 WHERE `id` = :id";
             $stmt = $PDO->prepare($sql);
-            $sucess = $stmt->execute(['id' => $newID]);
+            $sucess = $stmt->execute(array('id' => $newID));
 
             $this->__construct();
         }
@@ -130,7 +130,7 @@ class Admins {
         $error = "";
 
         $stmt = $user_db->prepare('SELECT surname, firstnames, username, email FROM UserDetails WHERE email = ?');
-        $stmt->execute([$email]);
+        $stmt->execute(array($email));
         $result = $stmt->fetch();
 
         if(!$result){
@@ -139,11 +139,13 @@ class Admins {
             return array($sucess, $error);
         }
         
-        $name = ucwords(strtolower(explode(',',$result['firstnames'])[0] . " " . $result['surname']));
+        #$name = ucwords(strtolower(explode(',',$result['firstnames'])[0] . " " . $result['surname']));
+        $temp = explode(',',$result['firstnames']);
+        $name = ucwords(strtolower($temp[0] . " " . $result['surname']));
 
         try {
             $stmt = $PDO->prepare("INSERT INTO admins(user, name, email, admin) VALUES(?, ?, ?, 1)");
-            $result = $stmt->execute([$result['username'], $name, $result['email']]);
+            $result = $stmt->execute(array($result['username'], $name, $result['email']));
         }
         catch (PDOException $e) {
             $sucess = FALSE;

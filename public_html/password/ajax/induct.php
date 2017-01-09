@@ -1,5 +1,5 @@
 <?php
-    require_once("../../resources/config.php");
+    require_once("../../../resources/config.php");
 
     // Only process POST reqeusts.
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -16,7 +16,7 @@
         
         try {
             $stmt = $PDO->prepare("INSERT INTO users(user, name, email, requestedInduction) VALUES(?, ?, ?, 1)");
-            $result = $stmt->execute([$USER->username, ucwords($USER->fullName), $USER->email]);
+            $result = $stmt->execute(array($USER->username, ucwords($USER->fullName), $USER->email));
         }
         catch (PDOException $e) {
             $worked = FALSE;
@@ -31,7 +31,7 @@
             
         } elseif( $code == "23000") {
             $stmt = $PDO->prepare("SELECT created from users WHERE user = ?");
-            $stmt->execute([$USER->username]);
+            $stmt->execute(array($USER->username));
             $result = $stmt->fetch();
             
             $date = date("d-m-Y", strtotime($result['created']));

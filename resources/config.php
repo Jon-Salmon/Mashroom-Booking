@@ -65,11 +65,11 @@ $pass = $config["db"]["db1"]["password"];
 $charset = 'utf8';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$opt = [
+$opt = array(
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
-];
+);
 $PDO = new PDO($dsn, $user, $pass, $opt);
 
 $host = $config["db"]["users"]["host"];
@@ -79,11 +79,12 @@ $pass = $config["db"]["users"]["password"];
 $charset = 'utf8';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$opt = [
+$opt = array(
 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 PDO::ATTR_EMULATE_PREPARES   => false,
-];
+);
+
 $user_db = new PDO($dsn, $user, $pass, $opt);
 /*
     Standard includes and Global variables

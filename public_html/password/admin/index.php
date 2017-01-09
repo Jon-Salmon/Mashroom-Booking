@@ -1,6 +1,7 @@
 <?php
     // load up your config file
-    require_once("../../resources/config.php");
+    require_once("../../../resources/config.php");
+
      
     if (!$USER->admin){
         header('Location: ../index.php');
@@ -49,7 +50,7 @@
             </thead>
             <tbody>
             <?php
-            $list = ['mash', 'tech', 'web'];
+            $list = array('mash', 'tech', 'web');
                 foreach ($list as $row){
                     $position = $ADMINS->{$row}->title;
                     $name = $ADMINS->{$row}->name;
@@ -182,7 +183,7 @@ END;
  
       if ( valid ) {
 
-        $.ajax({ url: '/dev/public_html/ajax/adminAdd.php',
+        $.ajax({ url: '<?php echo HTTP_ROOT . 'ajax/adminAdd.php'?>',
                 dataType: "json",
                 data: {action: JSON.stringify(email.val())},
                 type: 'post',

@@ -1,6 +1,6 @@
 <?php
     // load up your config file
-    require_once("../../resources/config.php");
+    require_once("../../../resources/config.php");
      
     if (!$USER->admin){
         header('Location: ../index.php');

@@ -107,9 +107,9 @@ class Event {
        else {
 
             $stmt = $this->PDO->prepare('SELECT * FROM calendar WHERE start < ? && end > ? && deleted = 0');
-            $stmt->execute([$this->end->format('Y-m-d H:i:s'), $this->start->format('Y-m-d H:i:s')]);
-            $slotTaken = !empty($stmt->fetch());
-
+            $stmt->execute(array($this->end->format('Y-m-d H:i:s'), $this->start->format('Y-m-d H:i:s')));
+            $temp = $stmt->fetchAll();
+            $slotTaken = !empty($temp);
             if ($slotTaken) {
                 return array(FALSE, "Slot unavalible");
             }
@@ -149,16 +149,18 @@ class Event {
        }
        else {
             $stmt = $this->PDO->prepare('SELECT owner FROM calendar WHERE id = ?');
-            $stmt->execute([$id]);
-            $alowedUser = $stmt->fetch()['owner'];
+            $stmt->execute(array($id));
+            $temp = $stmt->fetch();
+            $alowedUser = $temp['owner'];
+
 
             if ($alowedUser != $USER->username){
                 return array(FALSE, "Operation forbidden");
             } else {
                 $stmt = $this->PDO->prepare('SELECT * FROM calendar WHERE start < ? && end > ? && deleted = 0 && id != ?');
-                $stmt->execute([$this->end->format('Y-m-d H:i:s'), $this->start->format('Y-m-d H:i:s'), $id]);
-                $slotTaken = !empty($stmt->fetch());
-
+                $stmt->execute(array($this->end->format('Y-m-d H:i:s'), $this->start->format('Y-m-d H:i:s'), $id));
+                $temp = $stmt->fetchAll();
+                $slotTaken = !empty($temp);
                 if ($slotTaken) {
                     global $log;
                     return array(FALSE, "Slot unavalible");
@@ -179,7 +181,7 @@ class Event {
     private function _deleteDB($id){
 
         $stmt = $this->PDO->prepare("UPDATE calendar SET deleted=1 WHERE id = ?");
-        $result = $stmt->execute([$id]);
+        $result = $stmt->execute(array($id));
 
         return $result;
     }
@@ -190,8 +192,9 @@ class Event {
             global $USER;
 
             $stmt = $this->PDO->prepare("SELECT CASE WHEN (SELECT owner FROM calendar where id = :id && deleted = 0) = :user THEN False ELSE True END AS disallowed");
-            $stmt->execute([':id' => $id, ':user' => $USER->username]);
-            $disallowed = $stmt->fetch()['disallowed'];
+            $stmt->execute(array(':id' => $id, ':user' => $USER->username));
+            $temp = $stmt->fetch();
+            $disallowed = $temp['disallowed'];
 
 
             if ($disallowed){
@@ -209,7 +212,7 @@ class Event {
             global $ADMINS;
             
             $stmt = $this->PDO->prepare("SELECT owner, start FROM calendar where id = :id");
-            $stmt->execute([':id' => $id]);
+            $stmt->execute(array(':id' => $id));
             $result = $stmt->fetch();
             $username = $result['owner'];
             $start = new DateTime($result['start']);
@@ -232,7 +235,7 @@ class Event {
         if (!$admin) {
             global $USER;
             $stmt = $this->PDO->prepare("SELECT start, end, band, details, id FROM calendar WHERE end >= NOW() and owner = ? and deleted = FALSE ORDER BY start");
-            $stmt->execute([$USER->username]);
+            $stmt->execute(array($USER->username));
             $events = $stmt->fetchAll();
             
         }
