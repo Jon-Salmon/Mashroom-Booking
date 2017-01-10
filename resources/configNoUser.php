@@ -49,32 +49,9 @@ $opt = array(
     PDO::ATTR_EMULATE_PREPARES   => false,
 );
 $PDO = new PDO($dsn, $user, $pass, $opt);
-
-$host = $config["db"]["users"]["host"];
-$db = $config["db"]["users"]["dbname"];
-$user = $config["db"]["users"]["username"];
-$pass = $config["db"]["users"]["password"];
-$charset = 'utf8';
-
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$opt = array(
-PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-PDO::ATTR_EMULATE_PREPARES   => false,
-);
-
-$user_db = new PDO($dsn, $user, $pass, $opt);
 /*
     Standard includes and Global variables
 */
-
-require_once(LIBRARY_PATH . "/common.php");
-require_once(CLASSES_PATH . "/user.php");
-require_once(CLASSES_PATH . "/admins.php");
-
-$ADMINS = new Admins();
-$USER = new User($_ENV["REMOTE_USER"]);
-
 
 date_default_timezone_set('Europe/London');
 

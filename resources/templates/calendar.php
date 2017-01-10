@@ -39,7 +39,12 @@ $(document).ready(function() {
                 });
             });
         },
-        events: '<?php echo HTTP_ROOT ?>ajax/events.php',
+        height: function(){
+            return $( window ).height() - 90;
+        },
+        events: 'events.php',
+        scrollTime: '08:00:00',
+        firstDay: 1
         // put your options and callbacks here
     })
 

@@ -1,5 +1,5 @@
 <?php
-    require_once("../../../resources/config.php");
+    require_once("../../../../resources/config.php");
 
     // Only process POST reqeusts.
     if ($_SERVER["REQUEST_METHOD"] == "POST") {

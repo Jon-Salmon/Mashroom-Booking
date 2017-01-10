@@ -1,6 +1,6 @@
 <?php
 
-require_once("../../../resources/config.php");
+require_once("../../../../resources/config.php");
 
 $start = $_GET["start"];
 $end = $_GET["end"];
