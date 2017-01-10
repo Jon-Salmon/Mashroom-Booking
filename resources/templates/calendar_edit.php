@@ -121,7 +121,7 @@ $(document).ready(function() {
         },
 		selectHelper: true,
         select: function(start, end) {
-            if (!end.isBefore()){
+            if (!end.isBefore() && ($('#calendar').fullCalendar('getView').name == 'agendaWeek')){
             $('#eventDate').datepicker("set", start);
             $('#eventStart').timepicker("setTime", new Date(start));
             $('#eventEnd').timepicker("setTime", new Date(end));
@@ -229,13 +229,12 @@ $(document).ready(function() {
             });
         },
         dayClick: function(date, jsEvent, view) {
-            if (view.name = 'month'){
-                $('#calendar') 
-                    .fullCalendar('changeView', 'agendaWeek'/* or 'basicDay' */);
-                $('#calendar') 
-                    .fullCalendar('gotoDate', date); 
+            if (view.name == 'month'){
                 setTimeout(function() {
-                    $('#calEventDialog').dialog('close');
+                    $('#calendar') 
+                        .fullCalendar('changeView', 'agendaWeek'/* or 'basicDay' */);
+                    $('#calendar') 
+                        .fullCalendar('gotoDate', date); 
                 }, 1);
             }
         },
