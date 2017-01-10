@@ -253,7 +253,7 @@ $(document).ready(function() {
     var end = $('#eventEnd');
     var eventClass, color;
 
-    $('#eventDate').datepicker();
+    $('#eventDate').datepicker({'weekStart':1});
     $('#eventStart').timepicker({
         'scrollDefault': '09:00',
         'timeFormat': 'H:i',
