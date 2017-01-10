@@ -242,7 +242,8 @@ $(document).ready(function() {
         height: function(){
             return $( window ).height() - 90;
         },
-        scrollTime: '08:00:00'
+	scrollTime: '08:00:00',
+	firstDay: 1
         // put your options and callbacks here
     });
 
