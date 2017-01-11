@@ -49,7 +49,7 @@
                     echo '<td>' . $name . '</td>';
                     echo '<td><a href=mailto:' . $email . ' >' . $email . '</a></td>';
                     echo '<td>' . $created->format("d/m/Y") . '</td>';
-                    echo '<td><input name="checkbox[]" type="checkbox" value="' . $id . '"></td>';
+                    echo '<td><input class="checkbox" name="checkbox[]" type="checkbox" value="' . $id . '"></td>';
                     echo "</tr>";
                 }
             ?>
@@ -61,9 +61,11 @@
         <div class="padded-button"> 
         <input class="form-control" type="submit" name="delete" value="Delete Selected" />
         </div>
-        <div class="padded-button"> 
     </form>
-     
+    <div class="padded-button"> 
+    <button type="button" onclick="selectAll()" class="form-control">Select All</button>
+    </div>
+    <div class="padded-button"> 
     <form action="<?php echo "mailto:"; foreach($requests as $row) {echo $row['email'] . "; ";}?>" method="GET">
         <input class="form-control" type="submit" value="Email All" />
     </form>
@@ -71,4 +73,17 @@
     </div>
     
 </div>
+
+<script>
+
+function selectAll(){
+    var unchecked = true;
+    if ($('.checkbox:checked').length == $('.checkbox').length ){
+        unchecked = false;
+    }
+    $(".checkbox").prop('checked', unchecked); 
+}
+
+</script>
+
 <?php require_once(TEMPLATES_PATH . "/footer.php");?>
