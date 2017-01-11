@@ -10,9 +10,9 @@ if (!$USER->admin){
 
 if(isset($_POST['action']) && !empty($_POST['action'])) {
     if ($_POST['action'] == 'delete'){
-        $id = json_decode($_POST['data']);
+        list($id, $message) = json_decode($_POST['data']);
         $event = new Event($PDO);
-        echo $event->deleteEvent($id, FALSE, TRUE);
+        echo $event->deleteEvent($id, FALSE, TRUE, $message);
         exit();
     } else {
         echo FALSE;

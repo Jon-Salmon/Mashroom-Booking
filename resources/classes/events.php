@@ -187,7 +187,7 @@ class Event {
     }
 
 
-    public function deleteEvent($id, $checkUser, $sendEmail = FALSE) {
+    public function deleteEvent($id, $checkUser, $sendEmail = FALSE, $message = "") {
         if ($checkUser) {
             global $USER;
 
@@ -223,13 +223,15 @@ class Event {
             } else {
                 $name = $ADMINS->{$USER->role[0]}->title;
             }
+            $selectedBody = (empty(trim($message)) ? 'cancel_body' : 'cancel_body_message');
             $bodyDets = array(
                 "{fullName}" => $owner->fullName,
                 "{date}" => $start->format("d/m/y"),
                 "{start}" => $start->format("H:i"),
                 "{cancelledBy}" => $name,
+                "{message}" => $message
             );
-            email($USER->email, $name, $owner->email, DBGet('cancel_subject'), DBGet('cancel_body', $bodyDets));
+            email($USER->email, $name, $owner->email, DBGet('cancel_subject'), DBGet($selectedBody, $bodyDets));
         }
         return TRUE;
     }

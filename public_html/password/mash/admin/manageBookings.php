@@ -101,7 +101,10 @@
         },
         buttons: {
           "Delete": function() {
-              var id = $(this).data('id'); // Get the stored result
+              var id = [
+                  $(this).data('id'), // Get the stored result
+                  $('textarea#deleteDetails').val()
+              ];
                 $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChangeAdmin.php',
                         dataType: "json",
                         data: {
@@ -127,6 +130,9 @@
 
 <div id="delete-confirm" class="dialog" title="Delete event as admin">
     <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span><span id="induct-text">Note: Deleting this event will notify the event's creator of the cancellation by email.</span></p>
+    <p>Optional message:
+    <textarea class="form-control" id="deleteDetails"></textarea>
+    </p>
 </div>
 
 
