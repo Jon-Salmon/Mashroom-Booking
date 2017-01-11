@@ -5,6 +5,7 @@
     require_once(TEMPLATES_PATH . "/header.php");
     require_once(CLASSES_PATH . "/events.php");
 ?>
+<script src='<?php echo HTTP_ROOT ?>js/moment.min.js'></script>
 <div id="container">
     <div id="content">
         <!-- content -->
@@ -22,7 +23,7 @@
         
         ?>
 
-<table class="table table-hover">
+<table class="table table-hover" id="dataTable">
             <thead>
             <tr>
                 <th>Booking Name</th>
@@ -34,35 +35,56 @@
             </tr>
             </thead>
             <tbody>
-            <?php
-                foreach ($bookings as $row) {
-                    $band = $row['band'];
-                    $details = $row['details'];
-                    $id = $row['id'];
-                    $start = new DateTime($row['start']);
-                    $end = new DateTime($row['end']);
-
-                    echo '<tr>';
-                    echo '<td>' . $band . '</td>';
-                    echo '<td>' . $start->format("d/m/Y") . '</td>';
-                    echo '<td>' . $start->format("H:i") . '</td>';
-                    echo '<td>' . $end->format("H:i") . '</td>';
-                    echo '<td>' . $details . '</td>';
-
-                    echo "
-                    <td>
-                    <form method=\"post\" action=\"" . htmlspecialchars($_SERVER["PHP_SELF"]) . "\">  
-                    <input type=\"hidden\" name=\"id\" value=\"" . $id .  "\">
-                    <input type=\"submit\" class=\"btn\" name=\"submit\" value=\"Delete\">  
-                    </form>
-                    </td>";
-                    
-                    echo "</tr>";
-                }
-            ?>
             </tbody>
         </table>
 
     </div>
 </div>
+
+<script>
+
+function updateTable(){
+    $.ajax(
+    {
+        type: "GET",
+        url: '<?php echo HTTP_ROOT ?>ajax/eventsUser.php',
+        data: "{}",
+        dataType: "json",
+        cache: false,
+        success: function (data) {
+            $('#dataTable tbody').empty();
+            $('#dataTable').append(
+
+                $.map(data, function (item, index) {
+                    return '<tr><td>' + item.band + '</td><td>' + moment(item.start, "YYYY-MM-DD h:mm:ss").format('DD/MM/YYYY') + '</td>' +
+                        '<td>' + moment(item.start, "YYYY-MM-DD h:mm:ss").format('H:mm') + '</td><td>' + moment(item.end, "YYYY-MM-DD h:mm:ss").format('H:mm') + '</td><td>' + item.details + '</td>'+
+                        '<td><button class=\"btn\" onclick=\"confirmDelete(' + item.id + ')\">Delete</button></td>' +
+                        '</tr>';
+                }).join());
+            
+        
+        }
+    });
+}
+
+ function confirmDelete(id) {
+     $("#delete-confirm")
+        $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/eventChange.php',
+                data: {
+                    action: 'delete',
+                    data: JSON.stringify(id)
+                },
+                type: 'post',
+                success: function(output) {
+                            if (output == '1'){
+                                updateTable();
+                            }
+                        }
+        });
+  }
+
+ updateTable();
+
+</script>
+
 <?php require_once(TEMPLATES_PATH . "/footer.php");?>
