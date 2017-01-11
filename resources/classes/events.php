@@ -223,8 +223,13 @@ class Event {
             } else {
                 $name = $ADMINS->{$USER->role[0]}->title;
             }
-            
-            email($USER->email, $name, $owner->email, "MASH room booking cancellation", "Dear " . $owner->fullName . ",\n\nUnfortuanatly your MASH room booking for " . $start->format("d/m/Y") . " at " . $start->format("H:i") . " has had to be canceled by the " . $name . ". You can respsond to this email with any further inquires.");
+            $bodyDets = array(
+                "{fullName}" => $owner->fullName,
+                "{date}" => $start->format("d/m/y"),
+                "{start}" => $start->format("H:i"),
+                "{cancelledBy}" => $name,
+            );
+            email($USER->email, $name, $owner->email, DBGet('cancel_subject'), DBGet('cancel_body', $bodyDets));
         }
         return TRUE;
     }

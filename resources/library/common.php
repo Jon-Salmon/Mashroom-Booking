@@ -53,4 +53,21 @@ function email($from, $fromName, $to, $subject, $message) {
         return TRUE;
     }
 }
+
+function DBGet($name, $values = array()){
+    global $PDO;
+
+    $stmt = $PDO->prepare("SELECT value  FROM settings WHERE name = :name");
+    $stmt->execute(array(':name' => $name));
+    $temp = $stmt->fetch();
+    $result = $temp['value'];
+
+    if (!empty($values)){
+        foreach ($values as $key => $value){
+            $result = str_replace($key, $value, $result);
+        }
+    }
+    return $result;
+}
+
 ?>

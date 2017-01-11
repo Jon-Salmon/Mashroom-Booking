@@ -5,7 +5,6 @@
     require_once(TEMPLATES_PATH . "/header.php");
 ?>
 <div id="container">
-        
         <?php include(TEMPLATES_PATH . "/calendar_edit.php");?>
 
 </div>
