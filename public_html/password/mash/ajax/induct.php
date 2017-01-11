@@ -25,7 +25,10 @@
 
         
         if ($worked) {
-            email($USER->email, $USER->fullName, $ADMINS->mash->email, "Mashroom induction requested from " . $USER->fullName, $USER->fullName . " has requested a mashroom induction.");
+            $nameArray = array(
+                "{fullName}" => $USER->fullName
+            );
+            email($USER->email, $USER->fullName, $ADMINS->mash->email, DBGet('induct_subject', $nameArray), DBGet('induct_body', $nameArray));
             echo "Thank You! Your request has been sent to the Mash-room manager";
             exit();
             
