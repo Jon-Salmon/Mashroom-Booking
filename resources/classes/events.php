@@ -223,7 +223,9 @@ class Event {
             } else {
                 $name = $ADMINS->{$USER->role[0]}->title;
             }
-            $selectedBody = (empty(trim($message)) ? 'cancel_body' : 'cancel_body_message');
+            $temp = trim($message);
+            $temp = empty($temp);
+            $selectedBody = ($temp ? 'cancel_body' : 'cancel_body_message');
             $bodyDets = array(
                 "{fullName}" => $owner->fullName,
                 "{date}" => $start->format("d/m/y"),
