@@ -56,6 +56,7 @@ require_once(LIBRARY_PATH . "/vendor/autoload.php");
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+date_default_timezone_set('Europe/London');
 $log = new Logger('Mash');
 $log->pushHandler(new StreamHandler(dirname(__FILE__) . '/errors.log', Logger::WARNING));
 
@@ -77,13 +78,5 @@ $PDO = new PDO($dsn, $user, $pass, $opt);
     Standard includes and Global variables
 */
 
-date_default_timezone_set('Europe/London');
 
-/*
-    Error reporting.
-*/
-ini_set("error_reporting", "true");
-#ini_set('display_errors', 'Off');
-error_reporting(E_ALL|E_STRCT);
-#eror_reporting(0);
 ?>

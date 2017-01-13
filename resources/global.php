@@ -105,6 +105,4 @@ require_once(CLASSES_PATH . "/admins.php");
 $ADMINS = new Admins();
 $USER = new User($_ENV["REMOTE_USER"]);
 
-
-
 ?>
