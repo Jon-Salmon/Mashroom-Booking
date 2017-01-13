@@ -1,6 +1,6 @@
 <?php
 
-require_once("../../resources/configNoUser.php");
+require_once("../../resources/globalNoUser.php");
 
 $start = $_GET["start"];
 $end = $_GET["end"];

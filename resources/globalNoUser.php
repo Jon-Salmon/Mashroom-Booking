@@ -1,5 +1,42 @@
 <?php
  
+
+function shutdown()
+{
+    // This is our shutdown function, in 
+    // here we can do any last operations
+    // before the script is complete.
+
+    $errfile = "unknown file";
+    $errstr  = "shutdown";
+    $errno   = E_CORE_ERROR;
+    $errline = 0;
+
+    $error = error_get_last();
+
+    if( $error !== NULL) {
+        $errno   = $error["type"];
+        $errfile = $error["file"];
+        $errline = $error["line"];
+        $errstr  = $error["message"];
+
+        ob_end_clean();
+
+        require(TEMPLATES_PATH . "/error.php");
+
+        $errorMessage = date("Y-m-d h:i:sa") . ": " . $error["message"];
+        
+        global $log;
+        $log->error($errorMessage);
+        
+        die();
+    }
+}
+
+require_once('config.php');
+
+ob_start();
+
 /*
     Creating constants for heavily used paths makes things a lot easier.
     ex. require_once(LIBRARY_PATH . "Paginator.php")
@@ -13,24 +50,11 @@ defined("TEMPLATES_PATH")
 defined("CLASSES_PATH")
     or define("CLASSES_PATH", realpath(dirname(__FILE__) . '/classes'));
     
-require_once('root.php');
-    
-/*
-    The important thing to realize is that the config file should be included in every
-    page of your project, or at least any page you want access to these settings.
-    This allows you to confidently use these settings throughout a project because
-    if something changes such as your database credentials, or a path to a specific resource,
-    you'll only need to update it here.
-*/
- 
-require_once('db.php');
 
 require_once(LIBRARY_PATH . "/vendor/autoload.php");
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-
-ob_start();
 
 $log = new Logger('Mash');
 $log->pushHandler(new StreamHandler(dirname(__FILE__) . '/errors.log', Logger::WARNING));

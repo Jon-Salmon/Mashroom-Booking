@@ -54,6 +54,11 @@ function email($from, $fromName, $to, $subject, $message) {
     }
 }
 
+function errorMailer($message){
+    global $ADMINS;
+    email("trevs.mashroom@gmail.com", "MASH room error reporter", $ADMINS->web->email, "An error has occured", $message);
+}
+
 function DBGet($name, $values = array()){
     global $PDO;
 

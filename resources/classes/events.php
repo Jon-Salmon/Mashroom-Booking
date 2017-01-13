@@ -44,9 +44,9 @@ class Event {
             $timeSub1 = clone $time;
             if (($this->start->format('d/m/Y') == $time->format('d/m/Y')) || ($this->start->format('d/m/Y') == $timeSub1->modify("-1 second")->format('d/m/Y'))){
                 if ($time < $this->start) {
-                    $endErr = 'End time cannot be before start time';
+                    $endErr = 'End time cannot be before start time.';
                 } elseif ($time < new DateTime()) {
-                    $endErr = 'Event is in the past';
+                    $endErr = 'Event is in the past.';
                 } else {
                     $this->end = $time;
                 }
@@ -155,7 +155,7 @@ class Event {
 
 
             if ($alowedUser != $USER->username){
-                return array(FALSE, "Operation forbidden");
+                return array(FALSE, "Operation forbidden.");
             } else {
                 $stmt = $this->PDO->prepare('SELECT * FROM calendar WHERE start < ? && end > ? && deleted = 0 && id != ?');
                 $stmt->execute(array($this->end->format('Y-m-d H:i:s'), $this->start->format('Y-m-d H:i:s'), $id));

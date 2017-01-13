@@ -1,6 +1,6 @@
 <?php
 
-require_once("../../../../resources/config.php");
+require_once("../../../../resources/global.php");
 require_once(CLASSES_PATH . "/admins.php");
 
 if (!$USER->admin){

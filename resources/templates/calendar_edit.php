@@ -1,9 +1,8 @@
 
-<script src='<?php echo HTTP_ROOT ?>js/moment.min.js'></script>
-<script src='<?php echo HTTP_ROOT ?>js/fullcalendar.js'></script>
+<script src='<?php echo OPEN_ROOT ?>js/moment.min.js'></script>
+<script src='<?php echo OPEN_ROOT ?>js/fullcalendar.js'></script>
 <script src="<?php echo HTTP_ROOT ?>js/knockout-2.3.0.js" type="text/javascript"></script>
 <script src="<?php echo HTTP_ROOT ?>js/moment-datepicker.min.js"></script>
-<script src="js/jquery.timepicker.min.js"></script>
 <script type="text/javascript" src="<?php echo HTTP_ROOT ?>js/jquery.timepicker.min.js"></script>
 
 <script>

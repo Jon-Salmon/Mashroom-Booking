@@ -1,6 +1,6 @@
 
-<script src='<?php echo HTTP_ROOT ?>js/moment.min.js'></script>
-<script src='<?php echo HTTP_ROOT ?>js/fullcalendar.js'></script>
+<script src='<?php echo OPEN_ROOT ?>js/moment.min.js'></script>
+<script src='<?php echo OPEN_ROOT ?>js/fullcalendar.js'></script>
 <script>
 
 $(document).ready(function() {

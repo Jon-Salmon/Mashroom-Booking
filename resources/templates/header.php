@@ -1,4 +1,15 @@
- <!DOCTYPE html> 
+<!--
+
+Copyright © 2017 Jonathan Salmon. All rights reserved.
+
+All bugs please contact the webmaster <?php echo $ADMINS->web->name . " (" . $ADMINS->web->email . ")."; ?>
+
+
+If you are the webmaster and need assistance, please contact me directly (jonathan.salmon@hotmail.co.uk).
+
+-->
+
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -11,14 +22,14 @@
     
     <script src="<?php echo HTTP_ROOT?>js/induct_ajax.js"></script>
     
-    <title>Mash Room</title>
+    <title>MASH Room</title>
     
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="<?php echo HTTP_ROOT ?>css/jquery.timepicker.css">
     <link href="<?php echo HTTP_ROOT ?>css/datepicker.css" rel="stylesheet" />
-    <link rel='stylesheet' href='<?php echo HTTP_ROOT ?>css/fullcalendar.css' />
-    <link rel='stylesheet' href='<?php echo HTTP_ROOT ?>css/custom.css' />
+    <link rel='stylesheet' href='<?php echo OPEN_ROOT ?>css/fullcalendar.css' />
+    <link rel='stylesheet' href='<?php echo OPEN_ROOT ?>css/custom.css' />
 
 
 </head>

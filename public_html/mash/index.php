@@ -2,7 +2,7 @@
  
 <?php
 
-require_once('../../resources/configNoUser.php');
+require_once('../../resources/globalNoUser.php');
 
 ?>
  
@@ -23,8 +23,8 @@ require_once('../../resources/configNoUser.php');
     
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel='stylesheet' href='<?php echo HTTP_ROOT ?>css/fullcalendar.css' />
-    <link rel='stylesheet' href='<?php echo HTTP_ROOT ?>css/custom.css' />
+    <link rel='stylesheet' href='<?php echo OPEN_ROOT ?>css/fullcalendar.css' />
+    <link rel='stylesheet' href='<?php echo OPEN_ROOT ?>css/custom.css' />
 
 
 </head>
