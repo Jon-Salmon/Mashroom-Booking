@@ -174,3 +174,10 @@ table caption{
 .fc-unthemed td.fc-today {
   background: #EBEDF2;
 }
+
+/* Warnings */
+
+#global_warning {
+  margin-bottom: 15px;
+  text-align: center;
+}

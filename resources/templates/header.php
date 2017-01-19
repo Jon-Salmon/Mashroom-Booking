@@ -87,3 +87,11 @@ If you are the webmaster and need assistance, please contact me directly (jonath
     </div>
 
     <div class="container">
+    <?php
+    $temp = DBGet("global_warning");
+    if(!empty($temp)){
+      echo "<div class=\"alert alert-warning\" id=\"global_warning\" role=\"alert\">";
+      echo $temp;
+      echo "</div>";
+    }
+    ?>
