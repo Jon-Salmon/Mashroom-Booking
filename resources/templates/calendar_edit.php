@@ -238,7 +238,7 @@ $(document).ready(function() {
             }
         },
         height: function(){
-            return $( window ).height() - 90;
+            return $( window ).height() - $('.navbar').outerHeight(true) - $('#global_warning').outerHeight(true) - 15;
         },
 	scrollTime: '08:00:00',
 	firstDay: 1
