@@ -5,7 +5,7 @@
     require_once(TEMPLATES_PATH . "/header.php");
     require_once(CLASSES_PATH . "/events.php");
 ?>
-<script src='<?php echo HTTP_ROOT ?>js/moment.min.js'></script>
+<script src='<?php echo OPEN_ROOT ?>js/moment.min.js'></script>
 <div id="container">
     <div id="content">
         <!-- content -->
