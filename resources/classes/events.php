@@ -110,10 +110,26 @@ class Event {
             $stmt->execute(array($this->end->format('Y-m-d H:i:s'), $this->start->format('Y-m-d H:i:s')));
             $temp = $stmt->fetchAll();
             $slotTaken = !empty($temp);
+
+            # Set's max bookable time
+            $stmt = $this->PDO->prepare('SELECT start, end FROM calendar WHERE start < ? && end > ? && deleted = 0 && owner = ?');
+            $tempEnd = clone $this->end;
+            $tempEnd->add(new DateInterval('P1D'));
+            $stmt->execute(array($tempEnd->format('Y-m-d 00:00:00'), $this->start->format('Y-m-d 00:00:00'), $USER->username));
+            $temp = $stmt->fetchAll();
+            $totalInterval = new DateTime('00:00');
+            foreach ($temp as $booking){
+                $totalInterval->add(date_diff(new DateTime($booking["start"]), new DateTime($booking["end"])));
+            }
+            $totalInterval->add(date_diff($this->start, $this->end));
+
+            $min = ($totalInterval->getTimeStamp() - (new DateTime('00:00'))->getTimeStamp())/60;
+
             if ($slotTaken) {
                 return array(FALSE, "Slot unavalible");
-            }
-            else{
+            } elseif($min > (int)$GLOBALS["max_daily_time"]) {
+                return array(FALSE, "Max " . round((int)$GLOBALS["max_daily_time"]/60, 1) . " hours of booking per day");
+            } else {
                 $created = $this->_addToDB();
             }
        }
@@ -161,11 +177,28 @@ class Event {
                 $stmt->execute(array($this->end->format('Y-m-d H:i:s'), $this->start->format('Y-m-d H:i:s'), $id));
                 $temp = $stmt->fetchAll();
                 $slotTaken = !empty($temp);
-                if ($slotTaken) {
-                    global $log;
-                    return array(FALSE, "Slot unavalible");
+
+                # Set's max bookable time
+                $stmt = $this->PDO->prepare('SELECT start, end FROM calendar WHERE start < ? && end > ? && deleted = 0 && owner = ? && id != ?');
+                $tempEnd = clone $this->end;
+                $tempEnd->add(new DateInterval('P1D'));
+                $stmt->execute(array($tempEnd->format('Y-m-d 00:00:00'), $this->start->format('Y-m-d 00:00:00'), $USER->username, $id));
+                $temp = $stmt->fetchAll();
+                $totalInterval = new DateTime('00:00');
+                foreach ($temp as $booking){
+                    $totalInterval->add(date_diff(new DateTime($booking["start"]), new DateTime($booking["end"])));
                 }
-                else{
+                $totalInterval->add(date_diff($this->start, $this->end));
+
+                global $GLOBALS;
+
+                $min = ($totalInterval->getTimeStamp() - (new DateTime('00:00'))->getTimeStamp())/60;
+                
+                if ($slotTaken) {
+                    return array(FALSE, "Slot unavalible");
+                } elseif($min > (int)$GLOBALS["max_daily_time"]) {
+                    return array(FALSE, "Max " . round((int)$GLOBALS["max_daily_time"]/60, 1) . " hours of booking per day");
+                } else {
                     $created = $this->_editEventDB($id);
                 }
             }

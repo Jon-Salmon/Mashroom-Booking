@@ -13,13 +13,13 @@
             if (!empty($_POST['checkbox'])) {
                 $in_array = $_POST['checkbox'];
                 $in  = str_repeat('?,', count($in_array) - 1) . '?';
-                $sql = "DELETE FROM users WHERE id IN ($in)";
+                $sql = "DELETE FROM induction_requests WHERE id IN ($in)";
                 $stm = $PDO->prepare($sql);
                 $stm->execute($in_array);
             }
         }
 
-    $stmt = $PDO->query("SELECT id, name, email, created FROM users WHERE requestedInduction = 1 ORDER BY created");
+    $stmt = $PDO->query("SELECT id, name, email, created FROM induction_requests  WHERE requestedInduction = 1 ORDER BY created");
     $requests = $stmt->fetchAll();
 ?>
 

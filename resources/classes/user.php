@@ -40,6 +40,10 @@ class User {
                 $this->role[] = 'web';
             }
             $this->role[] = 'admin';
+
+            # Alows admin bookings to be unrestricted in time scale
+            global $GLOBALS;
+            $GLOBALS["max_daily_time"] = '1440';
         } else {
             $this->admin = FALSE;
         }

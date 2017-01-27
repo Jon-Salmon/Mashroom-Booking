@@ -5,8 +5,12 @@
 <script src="<?php echo HTTP_ROOT ?>js/moment-datepicker.min.js"></script>
 <script type="text/javascript" src="<?php echo HTTP_ROOT ?>js/jquery.timepicker.min.js"></script>
 
-<script>
+<?php
+global $GLOBALS;
+$maxBookingTime = (int)$GLOBALS["max_daily_time"];
+?>
 
+<script>
 
 $(document).ready(function() {
 
@@ -45,6 +49,11 @@ $(document).ready(function() {
             $('#eventStart').timepicker("setTime", new Date(calEvent.start));
             $('#eventEnd').timepicker("setTime", new Date(calEvent.end));
             $('#eventEnd').timepicker('option', 'minTime', $('#eventStart').val());
+            var temp = 24*60 - $('#eventStart').timepicker('getSecondsFromMidnight')/60;
+            if (<?php echo $maxBookingTime ?> < temp){
+                temp = <?php echo $maxBookingTime ?>;
+            }
+            $('#eventEnd').timepicker('option', 'maxTime', new Date($('#eventStart').timepicker('getTime').getTime() + temp*60000));
             $('#calEventDialog #eventTitle').val(calEvent.title);
             $('#calEventDialog #eventDetails').val(calEvent.details);
             allFields.removeClass( "ui-state-error" );
@@ -125,6 +134,11 @@ $(document).ready(function() {
             $('#eventStart').timepicker("setTime", new Date(start));
             $('#eventEnd').timepicker("setTime", new Date(end));
             $('#eventEnd').timepicker('option', 'minTime', $('#eventStart').val());
+            var temp = 24*60 - $('#eventStart').timepicker('getSecondsFromMidnight')/60;
+            if (<?php echo $maxBookingTime ?> < temp){
+                temp = <?php echo $maxBookingTime ?>;
+            }
+            $('#eventEnd').timepicker('option', 'maxTime', new Date($('#eventStart').timepicker('getTime').getTime() + temp*60000));
             $('#calEventDialog #eventTitle').val("");
             $('#calEventDialog #eventDetails').val("");
             allFields.removeClass( "ui-state-error" );
@@ -269,6 +283,11 @@ $(document).ready(function() {
     });
     $('#eventStart').on('changeTime', function() {
         $('#eventEnd').timepicker('option', 'minTime', $(this).val());
+        var temp = 24*60 - $('#eventStart').timepicker('getSecondsFromMidnight')/60;
+        if (<?php echo $maxBookingTime ?> < temp){
+            temp = <?php echo $maxBookingTime ?>;
+        }
+        $('#eventEnd').timepicker('option', 'maxTime', new Date($('#eventStart').timepicker('getTime').getTime() + temp*60000));
         var start = $('#eventStart').timepicker('getTime');
         var end = $('#eventEnd').timepicker('getTime');
         if (start >= end){

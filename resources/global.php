@@ -28,7 +28,7 @@ function shutdown()
 
         require(TEMPLATES_PATH . "/error.php");
 
-        $errorMessage = date("Y-m-d h:i:sa") . ": " . $error["message"];
+        $errorMessage = date("Y-m-d h:i:sa") . ": " . $error["message"] . " in " . $error["file"] . " line " . $error["line"];
         
         global $log;
         $log->error($errorMessage);
@@ -102,7 +102,14 @@ require_once(LIBRARY_PATH . "/common.php");
 require_once(CLASSES_PATH . "/user.php");
 require_once(CLASSES_PATH . "/admins.php");
 
+$GLOBALS = array();
+$stmt = $PDO->query("SELECT name, value  FROM settings WHERE initial_load = 1");
+$temp = $stmt->fetchAll();
+foreach ($temp as $row){
+    $GLOBALS[$row["name"]] = $row["value"];
+}
+
 $ADMINS = new Admins();
 $USER = new User($_ENV["REMOTE_USER"]);
-
+    
 ?>

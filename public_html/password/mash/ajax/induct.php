@@ -15,7 +15,7 @@
         $worked = TRUE;
         
         try {
-            $stmt = $PDO->prepare("INSERT INTO users(user, name, email, requestedInduction) VALUES(?, ?, ?, 1)");
+            $stmt = $PDO->prepare("INSERT INTO induction_requests(user, name, email, requestedInduction) VALUES(?, ?, ?, 1)");
             $result = $stmt->execute(array($USER->username, ucwords($USER->fullName), $USER->email));
         }
         catch (PDOException $e) {
@@ -33,7 +33,7 @@
             exit();
             
         } elseif( $code == "23000") {
-            $stmt = $PDO->prepare("SELECT created from users WHERE user = ?");
+            $stmt = $PDO->prepare("SELECT created from induction_requests WHERE user = ?");
             $stmt->execute(array($USER->username));
             $result = $stmt->fetch();
             
