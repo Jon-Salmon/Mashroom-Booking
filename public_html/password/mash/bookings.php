@@ -19,7 +19,6 @@
             }
         }
 
-        $bookings = $events->listEvents(FALSE);
         
         ?>
 

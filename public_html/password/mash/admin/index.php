@@ -37,7 +37,7 @@
         
         ?>
         
-        <button id="create-user" class="btn">Create new user</button>
+        <button id="create-user" class="btn">New admin user</button>
         
         <table class="table table-hover">
             <thead>
@@ -235,7 +235,7 @@ END;
   } );
   </script>
 
-<div id="dialog-create-user" class="dialog" title="Create new user">
+<div id="dialog-create-user" class="dialog" title="New admin user">
   <form>
     <fieldset>
       <label for="email">Durham email: </label>

@@ -1,4 +1,5 @@
 <?php
+    $inductionRequest = TRUE;
     require_once("../../../../resources/global.php");
 
     // Only process POST reqeusts.

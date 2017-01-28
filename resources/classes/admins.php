@@ -67,6 +67,14 @@ class Admins {
         return $stmt->fetch();
     }
 
+    function checkAdmin($user){
+        global $PDO;
+        $stmt = $PDO->prepare('SELECT * FROM admins WHERE (admin = 1 || techManager = 1 || mashManager = 1 || webmaster = 1) && user = ?;');
+        $stmt->execute(array($user));
+        $results = $stmt->fetch();
+        return !empty($results);
+    }
+
     function delete($id){
         global $PDO;
         $error = "Ooops, something went wrong. Maybe try again?";
@@ -124,8 +132,7 @@ class Admins {
     }
 
     function addAdmin($email){
-        global $user_db;
-        global $PDO;
+        global $user_db, $PDO, $USER;
         $sucess = TRUE;
         $error = "";
 
@@ -142,6 +149,8 @@ class Admins {
         #$name = ucwords(strtolower(explode(',',$result['firstnames'])[0] . " " . $result['surname']));
         $temp = explode(',',$result['firstnames']);
         $name = ucwords(strtolower($temp[0] . " " . $result['surname']));
+
+        $temp = $USER->addUser($result['email']);
 
         try {
             $stmt = $PDO->prepare("INSERT INTO admins(user, name, email, admin) VALUES(?, ?, ?, 1)");

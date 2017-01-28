@@ -111,5 +111,10 @@ foreach ($temp as $row){
 
 $ADMINS = new Admins();
 $USER = new User($_ENV["REMOTE_USER"]);
+
+if (!$USER->inducted && !$inductionRequest){
+    header('Location: ' . OPEN_ROOT . 'index.php?request=true');
+    die();
+}
     
 ?>

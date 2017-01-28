@@ -307,16 +307,6 @@ $(document).ready(function() {
             })
         }
         });
-    $("#errorDisplay").dialog({ 
-        modal: true, 
-        autoOpen: false,
-        title: "Error",
-        open: function(){
-        jQuery('.ui-widget-overlay').bind('click',function(){
-            jQuery('#errorDisplay').dialog('close');
-            })
-        }
-        });
         
     $('#calEventDialog').dialog({
         resizable: false,
@@ -528,10 +518,6 @@ $(document).ready(function() {
     Date: <span id="startDate"></span><br>
     Start: <span id="startTime"></span><br>
     End: <span id="endTime"></span><br><br>
-</div>
-
-<div id="errorDisplay" class="display" title="Error" style="display:none;">
-    <span id="message"></span><br><br>
 </div>
 
 <div id='calendar'></div>

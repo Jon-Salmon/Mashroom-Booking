@@ -51,7 +51,6 @@ If you are the webmaster and need assistance, please contact me directly (jonath
             <li><a href=<?php echo HTTP_ROOT . "index.php"?>>Home</a></li>
             <li><a id="newBooking" href="#">New Booking</a></li>
             <li><a href=<?php echo HTTP_ROOT . "bookings.php"?>>My Bookings</a></li>
-            <li><a id="bookInduction" href="#">Request Induction</a></li>
             <?php if($USER->admin) {
                 echo "
             <li class=\"dropdown\">
@@ -59,6 +58,7 @@ If you are the webmaster and need assistance, please contact me directly (jonath
               <ul class=\"dropdown-menu\">
                 <li><a href=\"" . HTTP_ROOT . "admin/manageBookings.php\">All Bookings</a></li>
                 <li><a href=\"" . HTTP_ROOT . "admin/index.php\">Admin Users</a></li>
+                <li><a href=\"" . HTTP_ROOT . "admin/allUsers.php\">All Users</a></li>
                 <li><a href=\"" . HTTP_ROOT . "admin/inductions.php\">Induction Requests</a></li>
               </ul>
             </li>
@@ -70,10 +70,6 @@ If you are the webmaster and need assistance, please contact me directly (jonath
     </nav>
 
 
-
-    <div id="induct-confirm" class="dialog" title="Request a MASH room induction">
-      <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span><span id="induct-text">Use of the MASH room requires you to have been inducted. Please register your interest with the MASH room manager below.</span></p>
-    </div>
 
     <div id="support-dialog" class="dialog" title="Support">
       <span id="induct-text">

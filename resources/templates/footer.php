@@ -2,39 +2,6 @@
 </div>
     <script>
     $( function() {
-      $( "#induct-confirm" ).dialog({
-        resizable: false,
-        height: "auto",
-        width: 400,
-        modal: true,
-        autoOpen: false,
-        open: function(){
-          jQuery('.ui-widget-overlay').bind('click',function(){
-              jQuery('#induct-confirm').dialog('close');
-          })
-        },
-        buttons: {
-          "Register": function() {
-              $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/induct.php',
-                      data: {induct: JSON.stringify('true')},
-                      type: 'post',
-                      success: function(output) {
-                                  var textSpan = document.getElementById("induct-text");
-                                  textSpan.innerHTML = output;
-                                  $('#induct-confirm').dialog("option", "buttons", {
-                                    Close: function() {
-                                      $( this ).dialog( "close" );
-                                    }
-                                  });
-                      }
-              });
-          },
-          Close: function() {
-            $( this ).dialog( "close" );
-          }
-        }
-      });
-
       $( "#support-dialog" ).dialog({
         resizable: false,
         height: "auto",
@@ -46,16 +13,19 @@
           })
         }
       });
+
+      $("#errorDisplay").dialog({ 
+          modal: true, 
+          autoOpen: false,
+          title: "Error",
+          open: function(){
+          jQuery('.ui-widget-overlay').bind('click',function(){
+              jQuery('#errorDisplay').dialog('close');
+              })
+          }
+          });
     });
     
-    $("#bookInduction").click(function(e) {
-        e.preventDefault();
-        if ($('#navbar').hasClass("in") == true){
-          $('.navbar-toggle').click();
-        }
-        $( "#induct-confirm" ).dialog( "open" );
-    });
-
     $("#support").click(function(e) {
         e.preventDefault();
         if ($('#navbar').hasClass("in") == true){
@@ -84,9 +54,15 @@
             $(document.body).append(form);
             form.submit();
         }
+
     });
           
     </script>
+
+    <div id="errorDisplay" class="display" title="Error" style="display:none;">
+        <span id="message"></span><br><br>
+    </div>
+    
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="<?php echo OPEN_ROOT ?>js/ie10-viewport-bug-workaround.js"></script>
   </body>
