@@ -78,5 +78,7 @@ $PDO = new PDO($dsn, $user, $pass, $opt);
     Standard includes and Global variables
 */
 
+require_once(CLASSES_PATH . "/admins.php");
+$ADMINS = new Admins();
 
 ?>

@@ -24,6 +24,19 @@ if(isset($_POST['action']) && !empty($_POST['action'])) {
         $users = $USER->getAll();
         echo json_encode($users);
         
+    } elseif ($_POST['action'] == 'clean') {
+        
+        global $USER, $user_db;
+        $users = $USER->getAll();
+        foreach($users as $user){
+            $stmt = $user_db->prepare('SELECT * FROM UserDetails WHERE username = ?');
+            $stmt->execute(array($user['user']));
+            $result = $stmt->fetch();
+            if (empty($result)){
+                $USER->deleteUser($user['user']);
+            }
+        }
+        echo json_encode(TRUE);
     } else {
         echo FALSE;
     }

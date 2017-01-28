@@ -31,7 +31,6 @@ If you are the webmaster and need assistance, please contact me directly (jonath
     <link rel='stylesheet' href='<?php echo OPEN_ROOT ?>css/fullcalendar.css' />
     <link rel='stylesheet' href='<?php echo OPEN_ROOT ?>css/custom.css' />
 
-
 </head>
  
 <body>
@@ -58,7 +57,7 @@ If you are the webmaster and need assistance, please contact me directly (jonath
               <ul class=\"dropdown-menu\">
                 <li><a href=\"" . HTTP_ROOT . "admin/manageBookings.php\">All Bookings</a></li>
                 <li><a href=\"" . HTTP_ROOT . "admin/index.php\">Admin Users</a></li>
-                <li><a href=\"" . HTTP_ROOT . "admin/allUsers.php\">All Users</a></li>
+                <li><a href=\"" . HTTP_ROOT . "admin/allUsers.php\">Inducted Users</a></li>
                 <li><a href=\"" . HTTP_ROOT . "admin/inductions.php\">Induction Requests</a></li>
               </ul>
             </li>
@@ -84,10 +83,9 @@ If you are the webmaster and need assistance, please contact me directly (jonath
 
     <div class="container">
     <?php
-    $temp = DBGet("global_warning");
-    if(!empty($temp)){
+    if(!empty($GLOBALS['global_warning'])){
       echo "<div class=\"alert alert-warning\" id=\"global_warning\" role=\"alert\">";
-      echo $temp;
+      echo $GLOBALS['global_warning'];
       echo "</div>";
     }
     ?>

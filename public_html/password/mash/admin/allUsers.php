@@ -7,25 +7,42 @@
         die();
     }
     
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        require_once(LIBRARY_PATH . "/downloads.php");
+        if ($_POST['export'] == 'csv') {
+            downloadUserCSV();
+        } elseif ($_POST['export'] == 'pdf') {
+            downloadUserPDF();
+        }
+    }
+
     require_once(TEMPLATES_PATH . "/header.php");
 ?>
 <script src='<?php echo OPEN_ROOT ?>js/moment.min.js'></script>
-<div id="container">
-    <div id="content">
-        <!-- content -->
+<div id="content" class="row">
 
-        <?php
-
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            if (!empty($_POST['id'])) {
-                $events->deleteEvent($_POST['id'], TRUE);
-            }
-        }
-
-        ?>
-
-<button id="create-user" class="btn">Create new user</button>
+    <div class="col-md-3 col-md-push-9">
+        <div class="padded-button">
+            <button id="create-user" class="form-control btn">Create new user</button>
+        </div>
+        <div class="padded-button">
+            <form action="" method="POST">
+                <input type="hidden" name="export" value="csv" />
+                <input class="form-control btn" type="submit" value="Export Data" />
+            </form>
+        </div>
+        <div class="padded-button">
+            <form action="" method="POST">
+                <input type="hidden" name="export" value="pdf" />
+                <input class="form-control btn" type="submit" value="Print List" />
+            </form>
+        </div>
+        <div class="padded-button">
+            <button title="Removes all users who are no longer a member of the university." id="clean-users" class="form-control btn">Clean Users</button>
+        </div>
+    </div>
         
+    <div class="col-md-9 col-md-pull-3">
 <table class="table table-hover" id="dataTable">
             <thead>
             <tr>
@@ -130,6 +147,70 @@
       form[ 0 ].reset();
       dialog.dialog( "open" );
     });
+
+    $( "#clean-users" ).button().on( "click", function() {
+        $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/users.php',
+                data: {
+                    action: 'clean'
+                },
+                dataType: "json",
+                type: 'post',
+                success: function(output) {
+                            if (output == 1){
+                                updateTable();
+                            }
+                            else {
+                                $("#message").html("Oops, something went a bit wrong");
+                                $('#delete-confirm').dialog('close');
+                                $('#errorDisplay').dialog('open');
+                            }
+                        }
+        });
+    });
+
+      $( "#delete-confirm" ).dialog({
+        resizable: false,
+        height: "auto",
+        width: 400,
+        modal: true,
+        autoOpen: false,
+        open: function(){
+          jQuery('.ui-widget-overlay').bind('click',function(){
+              jQuery('#induct-confirm').dialog('close');
+          })
+        },
+        buttons: {
+          "Delete": function() {
+              var user = $(this).data('user'); // Get the stored result
+                $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/users.php',
+                        data: {
+                            action: 'delete',
+                            data: JSON.stringify(user)
+                        },
+                        dataType: "json",
+                        type: 'post',
+                        success: function(output) {
+                                    if (output[0] == 1){
+                                        updateTable();
+                                        $('#delete-confirm').dialog('close');
+                                    }
+                                    else {
+                                        $("#message").html(output[1]);
+                                        $('#delete-confirm').dialog('close');
+                                        $('#errorDisplay').dialog('open');
+                                    }
+                                }
+                });
+            $( this ).dialog( "close" );
+          },
+          Cancel: function() {
+            $( this ).dialog( "close" );
+          }
+        }
+      });
+    
+      $( document ).tooltip();
+    
   } );
   
 
@@ -157,6 +238,12 @@ function updateTable(){
 }
 
  function confirmDelete(user) {
+     $("#delete-confirm")
+        .data('user', user)  // The important part .data() method
+        .dialog('open');
+  }
+
+ function deleteUser(user) {
     $.ajax({ url: '<?php echo HTTP_ROOT ?>ajax/users.php',
             data: {
                 action: 'delete',
@@ -179,6 +266,10 @@ function updateTable(){
  updateTable();
 
 </script>
+
+<div id="delete-confirm" class="dialog" title="Delete event as admin">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span><span id="induct-text">Are you sure you want to delete this user, they will no longer be able to use this service or the MASH room.</span></p>
+</div>
 
 <div id="dialog-create-user" class="dialog" title="Create new user">
   <form>

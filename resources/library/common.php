@@ -75,4 +75,16 @@ function DBGet($name, $values = array()){
     return $result;
 }
 
+function cleanUsers(){
+    global $USER, $user_db;
+    $users = $USER->getAll();
+    foreach($users as $user){
+        $stmt = $user_db->prepare('SELECT * FROM UserDetails WHERE username = ?');
+        $stmt->execute(array($user['user']));
+        $result = $stmt->fetch();
+        global $log;
+        $log->warning($user['user']);
+    }
+}
+
 ?>

@@ -30,9 +30,10 @@ require_once('../../resources/globalNoUser.php');
 <body>
     <nav class="navbar navbar-default navbar-static-top">
       <div class="container">
-        <div class="navbar-header">
+        <div class="navbar-header" style="width:100%">
           <a class="navbar-brand" href="<?php echo HTTP_ROOT ?>index.php">Mash Room</a>
-          <a style="position:float-left" class="navbar-brand" href="<?php echo HTTP_ROOT ?>index.php">Login</a>
+          <a style="float:left" class="navbar-brand" href="<?php echo HTTP_ROOT ?>index.php">Login</a>
+          <a style="float:right" class="navbar-brand" id="support" href="#">Support</a>
         </div>
       </div>
     </nav>
@@ -46,8 +47,25 @@ require_once('../../resources/globalNoUser.php');
 </div>
 
 <script>
+    $("#support").click(function(e) {
+        e.preventDefault();
+        $( "#support-dialog" ).dialog( "open" );
+    });
 
     $( function() {
+
+      $( "#support-dialog" ).dialog({
+        resizable: false,
+        height: "auto",
+        modal: true,
+        autoOpen: false,
+        open: function(){
+          jQuery('.ui-widget-overlay').bind('click',function(){
+              jQuery('#support-dialog').dialog('close');
+          })
+        }
+      });
+      
       $( "#induct-confirm" ).dialog({
         resizable: false,
         height: "auto",
@@ -90,4 +108,14 @@ require_once('../../resources/globalNoUser.php');
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="<?php echo OPEN_ROOT ?>js/ie10-viewport-bug-workaround.js"></script>
   </body>
+    <div id="support-dialog" class="dialog" title="Support">
+      <span id="induct-text">
+      <p>
+      For all queries relating to the MASH room, please contact <a href=mailto:<?php echo $ADMINS->mash->email; ?> ><?php echo $ADMINS->mash->name; ?> <span class="glyphicon glyphicon-envelope"></span></a>.<br/><br/>
+      For all general tech queries, please contact <a href=mailto:<?php echo $ADMINS->tech->email; ?> ><?php echo $ADMINS->tech->name; ?> <span class="glyphicon glyphicon-envelope"></span></a>.<br/><br/>
+      For all any issue or bug with this site, please contact <a href=mailto:<?php echo $ADMINS->web->email; ?> ><?php echo $ADMINS->web->name; ?> <span class="glyphicon glyphicon-envelope"></span></a>.<br/><br/>
+
+      </p>
+      </span>
+    </div>
 </html>

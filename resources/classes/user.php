@@ -45,7 +45,7 @@ class User {
             # Alows admin bookings to be unrestricted in time scale
             global $GLOBALS;
             $GLOBALS["max_daily_time"] = '1440';
-            
+
         } else {
             $this->admin = FALSE;
         }
@@ -63,7 +63,7 @@ class User {
     
     function getAll(){
         global $PDO;
-        $stmt = $PDO->query('SELECT user, name, email, created FROM users');
+        $stmt = $PDO->query('SELECT user, name, email, created FROM users ORDER BY name');
         $results = $stmt->fetchAll();
         return $results;
     }
