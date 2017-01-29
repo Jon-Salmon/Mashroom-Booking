@@ -47,7 +47,7 @@ function ImprovedTable($header, $data)
     #    $this->Cell($w[$i],7,$header[$i],0,0,'C');
     #$this->Ln();
     // Data
-    $this->SetFont('Arial','',7);
+    $this->SetFont('Arial','',8);
     $newRow = FALSE;
         
     foreach($data as $row)

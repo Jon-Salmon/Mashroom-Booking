@@ -32,7 +32,7 @@
             </form>
         </div>
         <div class="padded-button">
-            <form action="" method="POST">
+            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" target="_blank" method="POST">
                 <input type="hidden" name="export" value="pdf" />
                 <input class="form-control btn" type="submit" value="Print List" />
             </form>
@@ -106,6 +106,9 @@
                         form[ 0 ].reset();
                         updateTable();
                         email.focus();
+                        updateTips('');
+                        allFields.removeClass( "alert alert-danger ui-state-error" );
+                        tips.removeClass( "alert alert-danger ui-state-error" );
                     } else {
                         updateTips(output[1]);
                     }
