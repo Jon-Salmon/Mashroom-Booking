@@ -11,7 +11,12 @@
         require_once(LIBRARY_PATH . "/downloads.php");
         if ($_POST['export'] == 'csv') {
             downloadUserCSV();
-        } elseif ($_POST['export'] == 'pdf') {
+        }
+    }
+    
+    if ($_SERVER["REQUEST_METHOD"] == "GET") {
+        require_once(LIBRARY_PATH . "/downloads.php");
+        if ($_GET['export'] == 'pdf') {
             downloadUserPDF();
         }
     }
@@ -32,7 +37,7 @@
             </form>
         </div>
         <div class="padded-button">
-            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" target="_blank" method="POST">
+            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" target="_blank" method="GET">
                 <input type="hidden" name="export" value="pdf" />
                 <input class="form-control btn" type="submit" value="Print List" />
             </form>
