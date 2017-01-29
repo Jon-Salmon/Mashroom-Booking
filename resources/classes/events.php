@@ -123,7 +123,8 @@ class Event {
             }
             $totalInterval->add(date_diff($this->start, $this->end));
 
-            $min = ($totalInterval->getTimeStamp() - (new DateTime('00:00'))->getTimeStamp())/60;
+            $temp = new DateTime('00:00');
+            $min = ($totalInterval->getTimeStamp() - $temp->getTimeStamp())/60;
 
             if ($slotTaken) {
                 return array(FALSE, "Slot unavalible");
@@ -192,7 +193,8 @@ class Event {
 
                 global $GLOBALS;
 
-                $min = ($totalInterval->getTimeStamp() - (new DateTime('00:00'))->getTimeStamp())/60;
+                $temp = new DateTime('00:00');
+                $min = ($totalInterval->getTimeStamp() - $temp->getTimeStamp())/60;
                 
                 if ($slotTaken) {
                     return array(FALSE, "Slot unavalible");
