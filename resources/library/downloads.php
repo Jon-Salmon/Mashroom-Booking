@@ -54,14 +54,14 @@ function ImprovedTable($header, $data)
     {
         $this->Cell($w,6,$row['name'] . " (" . $row['email'] . ")", 0, 0, 'L');
         if ($newRow){
-            $this->Ln(6);
+            $this->Ln(5);
             $this->Cell($w,0,'','T');
-            $this->Cell(6,6,'');
+            $this->Cell(6,5,'');
             $this->Cell($w,0,'','T');
             $this->Ln(0);
             $newRow = FALSE;
         } else {
-            $this->Cell(6,6,'',0,0);
+            $this->Cell(6,5,'',0,0);
             $newRow = TRUE;
         }
     }
