@@ -264,6 +264,9 @@ $(document).ready(function() {
     var start = $('#eventStart');
     var end = $('#eventEnd');
     var eventClass, color;
+    var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+    width = (width > 400) ? 400 : width - 20;
+    var width2 = (width > 350) ? 350 : width - 20;
 
     $('#eventDate').datepicker({'weekStart':1});
     $('#eventStart').timepicker({
@@ -299,7 +302,8 @@ $(document).ready(function() {
         modal: true, 
         autoOpen: false,
         title: "Event details",
-        width:350,
+        width: width2,
+        minWidth: 250,
         open: function(){
             $(".validateTips").removeClass( "alert-danger" );
             jQuery('.ui-widget-overlay').bind('click',function(){
@@ -320,7 +324,8 @@ $(document).ready(function() {
         }
         ?>
         title: 'Add Event',
-        width: 400,
+        width: width,
+        minWidth: 250,
         modal: true,
         open: function(){
         jQuery('.ui-widget-overlay').bind('click',function(){

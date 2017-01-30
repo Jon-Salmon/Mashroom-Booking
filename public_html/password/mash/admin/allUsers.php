@@ -116,6 +116,8 @@
                         tips.removeClass( "alert alert-danger ui-state-error" );
                     } else {
                         updateTips(output[1]);
+                        email.focus();
+                        email.select();
                     }
                 }
         });
