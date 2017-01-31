@@ -83,7 +83,7 @@ function downloadUserCSV(){
     fputcsv($output, array('Name', 'Email'));
 
     // fetch the data
-    $stmt = $PDO->query('SELECT name, email FROM users ORDER BY name');
+    $stmt = $PDO->query('SELECT name, email FROM users WHERE staff = false ORDER BY name');
     $rows = $stmt->fetchAll();
 
     // loop over the rows, outputting them
@@ -96,7 +96,7 @@ function downloadUserCSV(){
 function downloadUserPDF(){
 
     global $USER, $ADMINS;
-    $users = $USER->getAll();
+    $users = $USER->getAll(FALSE);
     $header = array('Name', 'Email');
 
     $pdf = new PDF();

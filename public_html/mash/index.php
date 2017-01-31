@@ -83,10 +83,11 @@ require_once('../../resources/globalNoUser.php');
                       data: {induct: JSON.stringify('true')},
                       type: 'post',
                       success: function(output) {
-                                  var textSpan = document.getElementById("induct-text");
+                                  var textSpan = document.getElementById("message-text");
                                   textSpan.innerHTML = output;
-                                  $('#induct-confirm').dialog("option", "buttons", {
-                                    Close: function() {
+
+                                    $('#induct-confirm').dialog("option", "buttons", {
+                                      Close: function() {
                                       $( this ).dialog( "close" );
                                     }
                                   });
@@ -101,10 +102,6 @@ require_once('../../resources/globalNoUser.php');
     });
 </script>
 
-    <div id="induct-confirm" class="dialog" title="Request a MASH room induction">
-      <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span><span id="induct-text">Use of the MASH room and this website requires you to have been inducted by the MASH room manager. Please register your interest with the MASH room manager below.</span></p>
-    </div>
-    
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="<?php echo OPEN_ROOT ?>js/ie10-viewport-bug-workaround.js"></script>
   </body>
@@ -118,4 +115,8 @@ require_once('../../resources/globalNoUser.php');
       </p>
       </span>
     </div>
+    <div id="induct-confirm" class="dialog" title="Request a MASH room induction">
+      <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span><span id="message-text">Use of the MASH room and this website requires you to have been inducted by the MASH room manager. Please register your interest with the MASH room manager below.</span></p>
+    </div>
 </html>
+    

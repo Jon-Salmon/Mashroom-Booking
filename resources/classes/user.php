@@ -61,9 +61,13 @@ class User {
         
     }
     
-    function getAll(){
+    function getAll($all = TRUE){
         global $PDO;
-        $stmt = $PDO->query('SELECT user, name, email, created FROM users ORDER BY name');
+        if ($all){
+            $stmt = $PDO->query('SELECT user, name, email, created FROM users ORDER BY name');
+        } else {
+            $stmt = $PDO->query('SELECT user, name, email, created FROM users WHERE staff = false ORDER BY name');
+        }
         $results = $stmt->fetchAll();
         return $results;
     }
@@ -91,7 +95,7 @@ class User {
         $sucess = TRUE;
         $error = "";
 
-        $stmt = $user_db->prepare('SELECT surname, firstnames, username, email FROM UserDetails WHERE email = ?');
+        $stmt = $user_db->prepare('SELECT surname, firstnames, username, email, current_staff, current_student FROM UserDetails WHERE email = ?');
         $stmt->execute(array($email));
         $result = $stmt->fetch();
 
@@ -103,10 +107,16 @@ class User {
         
         $temp = explode(',',$result['firstnames']);
         $name = ucwords(strtolower($temp[0] . " " . $result['surname']));
+        $user = $result['username'];
+
+        $staff = $result['current_staff'] && !($result['current_student']);
+
 
         try {
-            $stmt = $PDO->prepare("INSERT INTO users(user, name, email) VALUES(?, ?, ?)");
-            $result = $stmt->execute(array($result['username'], $name, $result['email']));
+            $stmt = $PDO->prepare("INSERT INTO users(user, name, email, staff) VALUES(?, ?, ?, ?)");
+            $result = $stmt->execute(array($result['username'], $name, $result['email'], $staff));
+            $stmt = $PDO->prepare("DELETE FROM induction_requests WHERE user = ?");
+            $temp = $stmt->execute(array($user));
         }
         catch (PDOException $e) {
             $sucess = FALSE;
