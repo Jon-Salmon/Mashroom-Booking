@@ -187,7 +187,7 @@ $(document).ready(function() {
         selectOverlap: false,
         events: '<?php echo HTTP_ROOT ?>ajax/events.php',
         eventRender: function(event, element) {
-            event.editable = event.editAllowed;
+            event.editable = parseInt(event.editAllowed);
         },
         eventResize: function(event, delta, revertFunc) {
             var data = {
