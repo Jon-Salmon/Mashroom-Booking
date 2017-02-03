@@ -252,7 +252,12 @@ $(document).ready(function() {
             }
         },
         height: function(){
-            return $( window ).height() - $('.navbar').outerHeight(true) - $('#global_warning').outerHeight(true) - 15;
+            if (<?php echo (int)!empty($GLOBALS['global_warning']); ?>){
+                var warningHeight = $('#global_warning').outerHeight(true);
+            } else {
+                var warningHeight = 0;
+            }
+            return $( window ).height() - $('.navbar').outerHeight(true) - warningHeight - 15;
         },
 	scrollTime: '08:00:00',
 	firstDay: 1
