@@ -61,12 +61,14 @@ class User {
         
     }
     
-    function getAll($all = TRUE){
+    function getAll($all = TRUE, $orderBy = 'firstname'){
         global $PDO;
         if ($all){
-            $stmt = $PDO->query('SELECT user, name, email, created FROM users ORDER BY name');
+            $sql = 'SELECT user, surname, firstname, email, created FROM users ORDER BY ' . $orderBy;
+            $stmt = $PDO->query($sql);
         } else {
-            $stmt = $PDO->query('SELECT user, name, email, created FROM users WHERE staff = false ORDER BY name');
+            $sql = 'SELECT user, surname, firstname, email, created FROM users WHERE staff = false ORDER BY ' . $orderBy;
+            $stmt = $PDO->query($sql);
         }
         $results = $stmt->fetchAll();
         return $results;
@@ -106,17 +108,16 @@ class User {
         }
         
         $temp = explode(',',$result['firstnames']);
-        $name = ucwords(strtolower($temp[0] . " " . $result['surname']));
+        $firstname = ucwords(strtolower($temp[0]));
+        $surname = ucwords(strtolower($result['surname']));
         $user = $result['username'];
 
         $staff = $result['current_staff'] && !($result['current_student']);
 
 
         try {
-            $stmt = $PDO->prepare("INSERT INTO users(user, name, email, staff) VALUES(?, ?, ?, ?)");
-            $result = $stmt->execute(array($result['username'], $name, $result['email'], $staff));
-            $stmt = $PDO->prepare("DELETE FROM induction_requests WHERE user = ?");
-            $temp = $stmt->execute(array($user));
+            $stmt = $PDO->prepare("INSERT INTO users(user, surname, firstname, email, staff) VALUES(?, ?, ?, ?, ?)");
+            $result = $stmt->execute(array($result['username'], $surname, $firstname, $result['email'], $staff));
         }
         catch (PDOException $e) {
             $sucess = FALSE;
@@ -127,6 +128,8 @@ class User {
                 $error = "Oops! Something went wrong and we couldn't send your message.";
             }
         }
+        $stmt = $PDO->prepare("DELETE FROM induction_requests WHERE user = ?");
+        $temp = $stmt->execute(array($user));
         return array($sucess, $error);
     }
 

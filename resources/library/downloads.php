@@ -52,7 +52,7 @@ function ImprovedTable($header, $data)
         
     foreach($data as $row)
     {
-        $this->Cell($w,6,$row['name'] . " (" . $row['email'] . ")", 0, 0, 'L');
+        $this->Cell($w,6,$row['surname'] . ", " . $row['firstname'] . " (" . $row['email'] . ")", 0, 0, 'L');
         if ($newRow){
             $this->Ln(5);
             $this->Cell($w,0,'','T');
@@ -80,10 +80,10 @@ function downloadUserCSV(){
     $output = fopen('php://output', 'w');
 
     // output the column headings
-    fputcsv($output, array('Name', 'Email'));
+    fputcsv($output, array('Firstname', 'Surname', 'Email'));
 
     // fetch the data
-    $stmt = $PDO->query('SELECT name, email FROM users WHERE staff = false ORDER BY name');
+    $stmt = $PDO->query('SELECT firstname, surname, email FROM users WHERE staff = false ORDER BY firstname');
     $rows = $stmt->fetchAll();
 
     // loop over the rows, outputting them
@@ -96,7 +96,7 @@ function downloadUserCSV(){
 function downloadUserPDF(){
 
     global $USER, $ADMINS;
-    $users = $USER->getAll(FALSE);
+    $users = $USER->getAll(FALSE, 'surname');
     $header = array('Name', 'Email');
 
     $pdf = new PDF();

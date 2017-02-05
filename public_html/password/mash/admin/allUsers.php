@@ -236,7 +236,7 @@ function updateTable(){
             $('#dataTable').append(
 
                 $.map(data, function (item, index) {
-                    return '<tr><td>' + item.name + '</td><td>' + item.email + '</td><td>'
+                    return '<tr><td>' + item.firstname + ' ' + item.surname + '</td><td>' + item.email + '</td><td>'
                         + moment(item.created, "YYYY-MM-DD h:mm:ss").format('DD/MM/YYYY') + '</td>' +
                         '<td><button class=\"btn\" onclick=\"confirmDelete(\'' + item.user + '\')\">Remove</button></td>' +
                         '</tr>';
