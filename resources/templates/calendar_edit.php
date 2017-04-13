@@ -33,21 +33,21 @@ $(document).ready(function() {
             },
         eventConstraint:
             {
-                start: '00:00',    
+                start: '00:00',
                 end: '24:00',
                 dow: [ 0, 1, 2, 3, 4, 5, 6]
             },
         selectConstraint:
             {
-                start: '00:00',    
+                start: '00:00',
                 end: '24:00',
                 dow: [ 0, 1, 2, 3, 4, 5, 6]
             },
         eventClick: function(calEvent, jsEvent, view) {
             if (calEvent.editable == 1 && !calEvent.end.isBefore()){
             $('#eventDate').datepicker("set", calEvent.start);
-            $('#eventStart').timepicker("setTime", new Date(calEvent.start));
-            $('#eventEnd').timepicker("setTime", new Date(calEvent.end));
+            $('#eventStart').timepicker("setTime", new Date(calEvent.start.format()));
+            $('#eventEnd').timepicker("setTime", new Date(calEvent.end.format()));
             $('#eventEnd').timepicker('option', 'minTime', $('#eventStart').val());
             var temp = 24*60 - $('#eventStart').timepicker('getSecondsFromMidnight')/60;
             if (<?php echo $maxBookingTime ?> < temp){
@@ -127,12 +127,15 @@ $(document).ready(function() {
             month: false,
             agenda: true
         },
-		selectHelper: true,
+        selectHelper: true,
         select: function(start, end) {
             if (!end.isBefore() && ($('#calendar').fullCalendar('getView').name == 'agendaWeek')){
             $('#eventDate').datepicker("set", start);
-            $('#eventStart').timepicker("setTime", new Date(start));
-            $('#eventEnd').timepicker("setTime", new Date(end));
+            var start2 = start.format();
+            $('#eventStart').timepicker("setTime", new Date(start.format()));
+            $('#eventEnd').timepicker("setTime", new Date(end.format()));
+            // $('#eventStart').timepicker("setTime", start.utc().toDate());
+            // $('#eventEnd').timepicker("setTime", end.utc().toDate());
             $('#eventEnd').timepicker('option', 'minTime', $('#eventStart').val());
             var temp = 24*60 - $('#eventStart').timepicker('getSecondsFromMidnight')/60;
             if (<?php echo $maxBookingTime ?> < temp){
@@ -143,7 +146,7 @@ $(document).ready(function() {
             $('#calEventDialog #eventDetails').val("");
             allFields.removeClass( "ui-state-error" );
             tips.text("");
-            
+
             $("#calEventDialog").dialog("option", "buttons", [
                 {
                 text: "Save",
@@ -164,7 +167,7 @@ $(document).ready(function() {
                                                 } else {
                                                     updateTips(output[1]);
                                                 }
-				                                $('#calendar').fullCalendar('unselect');
+                                                $('#calendar').fullCalendar('unselect');
                                             }
                             });
                         }
@@ -179,8 +182,8 @@ $(document).ready(function() {
             $(".validateTips").removeClass( "alert-danger" );
             $('#calEventDialog').dialog('open');
 
-			} else {
-				$('#calendar').fullCalendar('unselect');
+            } else {
+                $('#calendar').fullCalendar('unselect');
             }
         },
         eventOverlap: false,
@@ -244,10 +247,10 @@ $(document).ready(function() {
         dayClick: function(date, jsEvent, view) {
             if (view.name == 'month'){
                 setTimeout(function() {
-                    $('#calendar') 
+                    $('#calendar')
                         .fullCalendar('changeView', 'agendaWeek'/* or 'basicDay' */);
-                    $('#calendar') 
-                        .fullCalendar('gotoDate', date); 
+                    $('#calendar')
+                        .fullCalendar('gotoDate', date);
                 }, 1);
             }
         },
@@ -259,8 +262,8 @@ $(document).ready(function() {
             }
             return $( window ).height() - $('.navbar').outerHeight(true) - warningHeight - 15;
         },
-	scrollTime: '08:00:00',
-	firstDay: 1
+    scrollTime: '08:00:00',
+    firstDay: 1
         // put your options and callbacks here
     });
 
@@ -303,8 +306,8 @@ $(document).ready(function() {
         }
     });
 
-    $("#eventContent").dialog({ 
-        modal: true, 
+    $("#eventContent").dialog({
+        modal: true,
         autoOpen: false,
         title: "Event details",
         width: width2,
@@ -316,7 +319,7 @@ $(document).ready(function() {
             })
         }
         });
-        
+
     $('#calEventDialog').dialog({
         resizable: false,
         <?php
@@ -366,8 +369,8 @@ $(document).ready(function() {
 
     });
 
-    var 
- 
+    var
+
       // From http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#e-mail-state-%28type=email%29
       eventDate = $( "#eventDate" ),
       eventStart = $( "#eventStart" ),
@@ -376,13 +379,13 @@ $(document).ready(function() {
       eventDetails = $("#eventDetails"),
       allFields = $( [] ).add( eventDate).add( eventStart).add(eventEnd ).add(eventTitle ).add(eventDetails ),
       tips = $( ".validateTips" );
- 
+
     function updateTips( t ) {
       tips
         .text( t )
         .addClass( "alert alert-danger" );
     }
- 
+
     function checkLength( o, n, min, max ) {
       if ( o.length > max || o.length < min ) {
         o.addClass( "ui-state-error" );
@@ -403,7 +406,7 @@ $(document).ready(function() {
         return true;
       }
     }
- 
+
     function updateEvent(id) {
         var valid = true;
         allFields.removeClass( "ui-state-error" );
@@ -414,9 +417,14 @@ $(document).ready(function() {
             'details': eventDetails.val(),
             'id': id
         };
-    
+
         data.start = eventStart.timepicker('getTime', data.date);
         data.end = eventEnd.timepicker('getTime', data.date);
+
+        var test = data.start.getTimezoneOffset()
+        // Correct for BST offset
+        data.start = new Date(data.start.getTime() - data.start.getTimezoneOffset() * 60000);
+        data.end = new Date(data.end.getTime() - data.end.getTimezoneOffset() * 60000);
 
         if (data.start > data.end){
             if (data.end.getHours() == 0 && data.end.getMinutes() == 0){
@@ -431,24 +439,24 @@ $(document).ready(function() {
         }
 
         valid = valid && checkLength(data.details, "title", 0, 255);
- 
+
       return [valid, data];
     }
-    
+
     $("#newBooking").click(function(e) {
         e.preventDefault();
-        
+
         if ($('#navbar').hasClass("in") == true){
             $('.navbar-toggle').click();
         }
-        
+
         $('#eventStart').val("");
         $('#eventEnd').val("");
         $('#calEventDialog #eventTitle').val("");
         $('#calEventDialog #eventDetails').val("");
         allFields.removeClass( "ui-state-error" );
         tips.text("");
-        
+
         $("#calEventDialog").dialog("option", "buttons", [
             {
             text: "Save",

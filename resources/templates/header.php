@@ -9,7 +9,7 @@ If you are the webmaster and need assistance, please contact me directly (jonath
 
 -->
 
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -19,11 +19,11 @@ If you are the webmaster and need assistance, please contact me directly (jonath
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    
+
     <script src="<?php echo HTTP_ROOT?>js/induct_ajax.js"></script>
-    
+
     <title>MASH Room</title>
-    
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="<?php echo HTTP_ROOT ?>css/jquery.timepicker.css">
@@ -32,7 +32,7 @@ If you are the webmaster and need assistance, please contact me directly (jonath
     <link rel='stylesheet' href='<?php echo OPEN_ROOT ?>css/custom.css' />
 
 </head>
- 
+
 <body>
     <nav class="navbar navbar-default navbar-static-top">
       <div class="container">
@@ -61,7 +61,8 @@ If you are the webmaster and need assistance, please contact me directly (jonath
                 <li><a href=\"" . HTTP_ROOT . "admin/inductions.php\">Induction Requests</a></li>
               </ul>
             </li>
-            ";} ?>
+            ";
+            } ?>
             <li><a id="support" href="#">Support</a></li>
           </ul>
         </div><!--/.nav-collapse -->
@@ -83,9 +84,9 @@ If you are the webmaster and need assistance, please contact me directly (jonath
 
     <div class="container">
     <?php
-    if(!empty($GLOBALS['global_warning'])){
-      echo "<div class=\"alert alert-warning\" id=\"global_warning\" role=\"alert\">";
-      echo $GLOBALS['global_warning'];
-      echo "</div>";
+    if(!empty($GLOBALS['global_warning'])) {
+        echo "<div class=\"alert alert-warning\" id=\"global_warning\" role=\"alert\">";
+        echo $GLOBALS['global_warning'];
+        echo "</div>";
     }
     ?>
