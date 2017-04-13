@@ -27,7 +27,7 @@ body{
 	line-height: 0;
 	height: 0;
 }
- 
+
 .clearfix {
 	display: block;
 }
@@ -57,9 +57,9 @@ hr{
 </head>
 <body>
     <div id="content">
-        
+
         <div class="clearfix"></div>
-        
+
         <div id="main-body">
             <p class="enormous-font bree-font">Oops...</p>
             <p class="big-font"> Something has gone very wrong </p>

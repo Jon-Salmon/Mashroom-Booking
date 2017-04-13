@@ -14,8 +14,8 @@
         }
       });
 
-      $("#errorDisplay").dialog({ 
-          modal: true, 
+      $("#errorDisplay").dialog({
+          modal: true,
           autoOpen: false,
           title: "Error",
           open: function(){
@@ -25,7 +25,7 @@
           }
           });
     });
-    
+
     $("#support").click(function(e) {
         e.preventDefault();
         if ($('#navbar').hasClass("in") == true){
@@ -33,8 +33,8 @@
         }
         $( "#support-dialog" ).dialog( "open" );
     });
-    
-    
+
+
     $("#newBooking").click(function(e) {
         e.preventDefault();
         if (!(window.location.pathname == '<?php echo HTTP_ROOT . "index.php"?>')){
@@ -56,13 +56,13 @@
         }
 
     });
-          
+
     </script>
 
     <div id="errorDisplay" class="display" title="Error" style="display:none;">
         <span id="message"></span><br><br>
     </div>
-    
+
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="<?php echo OPEN_ROOT ?>js/ie10-viewport-bug-workaround.js"></script>
   </body>

@@ -32,10 +32,10 @@ $(document).ready(function() {
         dayClick: function(date, jsEvent, view) {
             if (view.name == 'month'){
                 setTimeout(function() {
-                    $('#calendar') 
+                    $('#calendar')
                         .fullCalendar('changeView', 'agendaWeek'/* or 'basicDay' */);
-                    $('#calendar') 
-                        .fullCalendar('gotoDate', date); 
+                    $('#calendar')
+                        .fullCalendar('gotoDate', date);
                 }, 1);
             }
         },
@@ -48,8 +48,8 @@ $(document).ready(function() {
         // put your options and callbacks here
     })
 
-    $("#eventContent").dialog({ 
-        modal: true, 
+    $("#eventContent").dialog({
+        modal: true,
         autoOpen: false,
         title: "Event details",
         width:350,
